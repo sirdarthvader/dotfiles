@@ -91,7 +91,7 @@ setopt share_history
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions zsh-syntax-highlighting fast-syntax-highlighting zsh-autocomplete)
+plugins=(git zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -118,7 +118,7 @@ export EDITOR='nvim'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-. $(brew --prefix asdf)/libexec/asdf.sh
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
 export PATH="$HOME/.cargo/bin:$PATH"
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
@@ -261,8 +261,12 @@ ASYNCAPI_AC_ZSH_SETUP_PATH=/Users/ashish.singh/Library/Caches/@asyncapi/cli/auto
 
 
 
-# Anthropic
-security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain /Library/Keychains/System.keychain > /Users/ashish.singh/.custom-certs.pem 2>/dev/null && export {AWS_CA_BUNDLE,NODE_EXTRA_CA_CERTS,REQUESTS_CA_BUNDLE,SSL_CERT_FILE}=/Users/ashish.singh/.custom-certs.pem && export DENO_TLS_CA_STORE='system'
+# Anthropic — regenerate certs at most once per day
+CUSTOM_CERTS="$HOME/.custom-certs.pem"
+if [[ ! -f "$CUSTOM_CERTS" || $(( $(date +%s) - $(stat -f %m "$CUSTOM_CERTS") )) -gt 86400 ]]; then
+  security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain /Library/Keychains/System.keychain > "$CUSTOM_CERTS" 2>/dev/null
+fi
+export {AWS_CA_BUNDLE,NODE_EXTRA_CA_CERTS,REQUESTS_CA_BUNDLE,SSL_CERT_FILE}="$CUSTOM_CERTS" && export DENO_TLS_CA_STORE='system'
 export NODE_USE_SYSTEM_CA=1
 export PATH="$HOME/.local/bin:$PATH"
 
@@ -397,14 +401,14 @@ rgs() {
 # ============================================================
 # DELTA — beautiful git diffs
 # ============================================================
-# Configure git to use delta (only needs to run once, but is idempotent)
-git config --global core.pager delta
-git config --global interactive.diffFilter 'delta --color-only'
-git config --global delta.navigate true
-git config --global delta.side-by-side true
-git config --global delta.line-numbers true
-git config --global delta.syntax-theme TwoDark
-git config --global merge.conflictstyle zdiff3
+# Delta config — run once outside .zshrc:
+#   git config --global core.pager delta
+#   git config --global interactive.diffFilter 'delta --color-only'
+#   git config --global delta.navigate true
+#   git config --global delta.side-by-side true
+#   git config --global delta.line-numbers true
+#   git config --global delta.syntax-theme TwoDark
+#   git config --global merge.conflictstyle zdiff3
 
 # ============================================================
 # YAZI — terminal file manager
