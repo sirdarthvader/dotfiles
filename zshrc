@@ -23,6 +23,7 @@ export PATH="/Users/ashish.singh/.rd/bin:$PATH"
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
 ZSH_THEME="powerlevel10k/powerlevel10k"
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -98,13 +99,22 @@ source $ZSH/oh-my-zsh.sh
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
-
 # You may need to manually set your language environment
 export LANG=en_US.UTF-8
 
 # Preferred editor
 export EDITOR='nvim'
 # export EDITOR='code'
+
+. /opt/homebrew/opt/asdf/libexec/asdf.sh
+export PATH="$HOME/.cargo/bin:$PATH"
+
+# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+
+
+# DENO CONFIG
+export DENO_INSTALL="/Users/ashish.singh/.deno"
+export PATH="$DENO_INSTALL/bin:$PATH"
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -118,17 +128,31 @@ export EDITOR='nvim'
 # alias zshconfig="mate ~/.zshrc"
 # alias ohmyzsh="mate ~/.oh-my-zsh"
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
-export PATH="$HOME/.cargo/bin:$PATH"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+#TMUX ALIASES
+alias tls='tmux ls'
+tat(){
+  local session_name="$1"
+  if [ -z "$session_name" ]; then
+    echo "Missing session name"
+    echo "Usage: tat <session_name>"
+    return 1
+  fi
+  tmux attach-session -t "$session_name"
+}
+tns() {
+  local session_name="$1"
+  if [ -z "$session_name" ]; then
+    echo "Missing session name"
+    echo "Usage: tns <session_name>"
+    return 1
+  fi
+  tmux new-session -s "$session_name"
+}
 
 
 
-# DENO CONFIG
-export DENO_INSTALL="/Users/ashish.singh/.deno"
-export PATH="$DENO_INSTALL/bin:$PATH"
+
 
 
 # Custome Alias
