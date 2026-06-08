@@ -7,7 +7,6 @@
 # Starship Prompt
 export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
-# If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
 
 # Path to your oh-my-zsh installation.
@@ -118,6 +117,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
+# To customize Starship, edit ~/.config/starship/starship.toml.
 
 
 # DENO CONFIG
@@ -139,6 +139,8 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 
 #TMUX ALIASES
 alias tls='tmux ls'
+
+# TMUX attach and new session with session name as argument, if no session name provided, show usage
 tat(){
   local session_name="$1"
   if [ -z "$session_name" ]; then
@@ -148,6 +150,8 @@ tat(){
   fi
   tmux attach-session -t "$session_name"
 }
+
+# TMUX new session with session name as argument, if no session name provided, show usage
 tns() {
   local session_name="$1"
   if [ -z "$session_name" ]; then
@@ -160,10 +164,7 @@ tns() {
 
 
 
-
-
-
-# Custome Alias
+# Custom Alias
 
 ## NPM
 alias nrc='open ~/.npmrc'
@@ -303,7 +304,6 @@ esac
 ## PNPM end
 
 # AsyncAPI CLI Autocomplete
-
 ASYNCAPI_AC_ZSH_SETUP_PATH=/Users/ashish.singh/Library/Caches/@asyncapi/cli/autocomplete/zsh_setup && test -f $ASYNCAPI_AC_ZSH_SETUP_PATH && source $ASYNCAPI_AC_ZSH_SETUP_PATH; # asyncapi autocomplete setup
 
 
