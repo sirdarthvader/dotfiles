@@ -57,6 +57,12 @@ backup_if_real ~/.config/nvim
 ln -sfn "$DOTFILES_DIR/nvim" ~/.config/nvim
 echo "   ✓ Neovim config linked"
 
+# Ghostty — symlink the entire config directory
+mkdir -p ~/.config
+backup_if_real ~/.config/ghostty
+ln -sfn "$DOTFILES_DIR/ghostty" ~/.config/ghostty
+echo "   ✓ Ghostty config linked"
+
 # tmux
 backup_if_real ~/.tmux.conf
 ln -sfn "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
