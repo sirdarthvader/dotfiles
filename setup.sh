@@ -63,16 +63,24 @@ backup_if_real ~/.config/ghostty
 ln -sfn "$DOTFILES_DIR/ghostty" ~/.config/ghostty
 echo "   ✓ Ghostty config linked"
 
-# tmux
+# tmux — symlink the whole config dir (config + widget scripts) and the legacy path
+backup_if_real ~/.config/tmux
+ln -sfn "$DOTFILES_DIR/tmux" ~/.config/tmux
 backup_if_real ~/.tmux.conf
-ln -sfn "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
-echo "   ✓ tmux config linked"
+ln -sfn "$DOTFILES_DIR/tmux/tmux.conf" ~/.tmux.conf
+echo "   ✓ tmux config + widgets linked"
 
 # Shell config — symlink the whole zshrc
 backup_if_real ~/.zshrc
-ln -sfn "$DOTFILES_DIR/zshrc" ~/.zshrc
+ln -sfn "$DOTFILES_DIR/zsh/zshrc" ~/.zshrc
 echo "   ✓ Shell config linked"
-
+# ── tmux plugin manager (TPM) ────────────────
+# The tmux config loads plugins from ~/.tmux/plugins; clone TPM so they work.
+if [ ! -d ~/.tmux/plugins/tpm ]; then
+  echo "📦 Installing TPM (tmux plugin manager)..."
+  git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
+  echo "   ✓ TPM installed (open tmux and press prefix + I to install plugins)"
+fi
 # ── Install Claude Code CLI ───────────────────────────────
 if ! command -v claude &> /dev/null; then
   echo "📦 Installing Claude Code CLI..."
@@ -84,7 +92,7 @@ echo ""
 echo "✅ Setup complete!"
 echo ""
 echo "Next steps:"
-echo "  1. Restart your terminal (or run: source $SHELL_RC)"
+echo "  1. Restart your terminal (or run: source ~/.zshrc)"
 echo "  2. Open nvim — plugins will auto-install on first launch"
 echo "  3. Run :Copilot auth inside Neovim to sign in to GitHub Copilot"
 echo "  4. Run :MasonInstall prettier inside Neovim for formatting"
