@@ -43,36 +43,29 @@ DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # ── Symlink configs ───────────────────────────────────────
 echo "🔗 Linking config files..."
 
-# Neovim
-mkdir -p ~/.config/nvim
-ln -sf "$DOTFILES_DIR/nvim/init.lua" ~/.config/nvim/init.lua
+# Helper: back up an existing real (non-symlink) path before linking
+backup_if_real() {
+  if [ -e "$1" ] && [ ! -L "$1" ]; then
+    mv "$1" "$1.backup-$(date +%Y%m%d-%H%M%S)"
+    echo "   ↳ Backed up existing $1"
+  fi
+}
+
+# Neovim — symlink the entire config directory
+mkdir -p ~/.config
+backup_if_real ~/.config/nvim
+ln -sfn "$DOTFILES_DIR/nvim" ~/.config/nvim
 echo "   ✓ Neovim config linked"
 
 # tmux
-ln -sf "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
+backup_if_real ~/.tmux.conf
+ln -sfn "$DOTFILES_DIR/tmux.conf" ~/.tmux.conf
 echo "   ✓ tmux config linked"
 
-# Shell config — append our additions if not already present
-SHELL_RC="$HOME/.zshrc"
-if [ -n "$BASH_VERSION" ]; then
-  SHELL_RC="$HOME/.bashrc"
-fi
-
-# Add EDITOR setting if not present
-if ! grep -q 'export EDITOR="nvim"' "$SHELL_RC" 2>/dev/null; then
-  echo '' >> "$SHELL_RC"
-  echo '# ── Added by dotfiles setup ──' >> "$SHELL_RC"
-  echo 'export EDITOR="nvim"' >> "$SHELL_RC"
-  echo 'alias vim="nvim"' >> "$SHELL_RC"
-  echo 'alias v="nvim"' >> "$SHELL_RC"
-  echo "   ✓ Shell config updated"
-fi
-
-# Add zoxide init if not present
-if ! grep -q 'eval "$(zoxide init' "$SHELL_RC" 2>/dev/null; then
-  echo 'eval "$(zoxide init zsh)"' >> "$SHELL_RC"
-  echo "   ✓ Zoxide init added"
-fi
+# Shell config — symlink the whole zshrc
+backup_if_real ~/.zshrc
+ln -sfn "$DOTFILES_DIR/zshrc" ~/.zshrc
+echo "   ✓ Shell config linked"
 
 # ── Install Claude Code CLI ───────────────────────────────
 if ! command -v claude &> /dev/null; then

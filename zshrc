@@ -1,9 +1,12 @@
 # Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
 # Initialization code that may require console input (password prompts, [y/n]
 # confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
+#if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
+#  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
+#fi
+
+# Starship Prompt
+export STARSHIP_CONFIG="$HOME/.config/starship/starship.toml"
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:$HOME/.local/bin:/usr/local/bin:$PATH
@@ -22,8 +25,9 @@ export PATH="/Users/ashish.singh/.rd/bin:$PATH"
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-ZSH_THEME="powerlevel10k/powerlevel10k"
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# ZSH_THEME="powerlevel10k/powerlevel10k"
+# [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+ZSH_THEME=""
 
 # Set list of themes to pick from when loading at random
 # Setting this variable when ZSH_THEME=random will cause zsh to load
@@ -96,6 +100,9 @@ plugins=(git zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete)
 
 source $ZSH/oh-my-zsh.sh
 
+# Initialize Starship (must be after oh-my-zsh to avoid being overridden)
+eval "$(starship init zsh)"
+
 # User configuration
 
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -106,8 +113,10 @@ export LANG=en_US.UTF-8
 export EDITOR='nvim'
 # export EDITOR='code'
 
-. /opt/homebrew/opt/asdf/libexec/asdf.sh
+
 export PATH="$HOME/.cargo/bin:$PATH"
+
+
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
 
@@ -177,7 +186,7 @@ alias cdh='cd ~/Documents'
 
 
 ## Git shortcuts
-alias gs='git status'
+alias zz='git status'
 alias gd='git diff'
 alias gl='git log --oneline --graph --decorate --all -10'
 alias gcb='git checkout -b'
@@ -245,9 +254,24 @@ gcnb() {
 
 }
 
+# Clone Repo from cvent-internal
+gclo() {
+  local repoName="$1"
+
+  if [ -z "$repoName" ]; then
+    echo "Missing repo name to clone"
+    echo "Usage: gclo <repo-name>"
+    return 1
+  fi
+
+  git clone https://github.com/cvent-internal/"$repoName".git
+}
+
+
+
 
 # Build and run CDK deployments
-bnd() {
+boom() {
   local env="${1:-sandbox}"
   pnpm build && pnpm deploy:$env
 }
@@ -260,7 +284,7 @@ alias cdtest='cd /Users/ashish.singh/Documents/cdf-test-planner-app'
 # ZSHRC edit and reload
 alias oz='code ~/.zshrc'
 alias sz='source ~/.zshrc'
-alias cl='clear'
+alias xx='clear'
 
 
 # Quickly find and kill process using a port
@@ -447,3 +471,4 @@ y() {
   fi
   rm -f "$tmp"
 }
+eval "$(mise activate zsh)"
