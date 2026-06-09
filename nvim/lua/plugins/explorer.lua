@@ -1,7 +1,8 @@
 return {
   -- 1. Import LazyVim's official Neo-tree configuration template
-  { import = "lazyvim.plugins.extras.editor.neo-tree" },
-
+  {
+    import = "lazyvim.plugins.extras.editor.neo-tree",
+  },
   -- 2. Configure Neo-tree with custom overrides, Git tracking, LSP diagnostics, and Neon highlights
   {
     "nvim-neo-tree/neo-tree.nvim",
@@ -9,20 +10,50 @@ return {
     init = function()
       -- Inject custom highlight groups matching your aesthetic palette
       local highlights = {
-        NeoTreeDiagnosticError = { fg = "#FF2A7A", bold = true }, 
-        NeoTreeDiagnosticWarn  = { fg = "#FFD200", bold = true }, 
-        NeoTreeDiagnosticInfo  = { fg = "#00F0FF" },              
-        NeoTreeDiagnosticHint  = { fg = "#9D4EDD" },              
+        NeoTreeDiagnosticError = {
+          fg = "#FF2A7A",
+          bold = true,
+        },
+        NeoTreeDiagnosticWarn = {
+          fg = "#FFD200",
+          bold = true,
+        },
+        NeoTreeDiagnosticInfo = {
+          fg = "#00F0FF",
+        },
+        NeoTreeDiagnosticHint = {
+          fg = "#9D4EDD",
+        },
 
-        NeoTreeGitAdded     = { fg = "#A6E22E" }, 
-        NeoTreeGitModified  = { fg = "#FF9F1C" }, 
-        NeoTreeGitDeleted   = { fg = "#FF4A5A" }, 
-        NeoTreeGitRenamed   = { fg = "#00D2FF" }, 
-        NeoTreeGitUntracked = { fg = "#FF55FF", italic = true }, 
-        NeoTreeGitIgnored   = { fg = "#444B6A" }, 
-        NeoTreeGitUnstaged  = { fg = "#FF9E64" }, 
-        NeoTreeGitStaged    = { fg = "#73DACA" }, 
-        NeoTreeGitConflict  = { fg = "#BB9AF7", bold = true }, 
+        NeoTreeGitAdded = {
+          fg = "#A6E22E",
+        },
+        NeoTreeGitModified = {
+          fg = "#FF9F1C",
+        },
+        NeoTreeGitDeleted = {
+          fg = "#FF4A5A",
+        },
+        NeoTreeGitRenamed = {
+          fg = "#00D2FF",
+        },
+        NeoTreeGitUntracked = {
+          fg = "#FF55FF",
+          italic = true,
+        },
+        NeoTreeGitIgnored = {
+          fg = "#444B6A",
+        },
+        NeoTreeGitUnstaged = {
+          fg = "#FF9E64",
+        },
+        NeoTreeGitStaged = {
+          fg = "#73DACA",
+        },
+        NeoTreeGitConflict = {
+          fg = "#BB9AF7",
+          bold = true,
+        },
       }
 
       for group, opts in pairs(highlights) do
@@ -37,11 +68,18 @@ return {
       window = {
         width = 30,
         mappings = {
+          -- Close the explorer with <Esc> while focused inside it.
+          -- This must be a neo-tree window mapping (buffer-local) because
+          -- neo-tree binds <Esc> to "cancel" by default, which would otherwise
+          -- swallow a global <Esc>/<Esc><Esc> mapping.
+          ["<esc>"] = "close_window",
           ["<C-cr>"] = function(state)
             local node = state.tree:get_node()
             if node.type == "file" then
               require("neo-tree.sources.filesystem.commands").open(state)
-              require("neo-tree.command").execute({ action = "close" })
+              require("neo-tree.command").execute({
+                action = "close",
+              })
             end
           end,
         },
@@ -50,29 +88,29 @@ return {
       default_component_configs = {
         diagnostics = {
           symbols = {
-            hint  = "⛩",
-            info  = "",
-            warn  = "",
+            hint = "⛩",
+            info = "",
+            warn = "",
             error = "",
           },
           highlights = {
-            hint  = "NeoTreeDiagnosticHint",
-            info  = "NeoTreeDiagnosticInfo",
-            warn  = "NeoTreeDiagnosticWarn",
+            hint = "NeoTreeDiagnosticHint",
+            info = "NeoTreeDiagnosticInfo",
+            warn = "NeoTreeDiagnosticWarn",
             error = "NeoTreeDiagnosticError",
           },
         },
         git_status = {
           symbols = {
-            added     = "",
-            modified  = "  ",
-            deleted   = "  ",
-            renamed   = "  ",
+            added = "",
+            modified = "  ",
+            deleted = "  ",
+            renamed = "  ",
             untracked = "",
-            ignored   = "◌",
-            unstaged  = "  ",
-            staged    = "",
-            conflict  = "",
+            ignored = "◌",
+            unstaged = "  ",
+            staged = "",
+            conflict = "",
           },
         },
       },
@@ -89,26 +127,31 @@ return {
           visible = false,
           hide_dotfiles = true,
           hide_gitignored = true,
-          hide_by_name = {
-            ".DS_Store", "node_modules", "dist", "build", ".next", ".turbo",
-          },
-          hide_by_pattern = {
-            "**/__*",
-          },
-          always_show = {
-            ".copilot*", ".claude*", ".env", ".env.local", ".env.production", ".gitignore",
-          },
-          always_show_by_pattern = {
-            ".env*", "*.config.*",
-          },
+          hide_by_name = { ".DS_Store", "node_modules", "dist", "build", ".next", ".turbo" },
+          hide_by_pattern = { "**/__*" },
+          always_show = { ".copilot*", ".claude*", ".env", ".env.local", ".env.production", ".gitignore" },
+          always_show_by_pattern = { ".env*", "*.config.*" },
         },
 
         find_by_full_path_words = false,
         find_args = {
           fd = {
-            "--exclude", ".git", "--exclude", "node_modules", "--exclude", "dist",
-            "--exclude", "build", "--exclude", ".next", "--exclude", ".turbo",
-            "--exclude", ".cache", "--exclude", "__*",
+            "--exclude",
+            ".git",
+            "--exclude",
+            "node_modules",
+            "--exclude",
+            "dist",
+            "--exclude",
+            "build",
+            "--exclude",
+            ".next",
+            "--exclude",
+            ".turbo",
+            "--exclude",
+            ".cache",
+            "--exclude",
+            "__*",
           },
         },
       },
@@ -117,29 +160,38 @@ return {
       {
         "<leader>e",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = LazyVim.root() })
+          require("neo-tree.command").execute({
+            toggle = true,
+            dir = LazyVim.root(),
+          })
         end,
         desc = "Explorer Neo-tree (Root Dir)",
       },
       {
-        "<leader>E",
+        "<Esc><Esc>",
         function()
-          require("neo-tree.command").execute({ toggle = true, dir = vim.uv.cwd() })
+          require("neo-tree.command").execute({
+            toggle = true,
+            dir = LazyVim.root(),
+          })
         end,
-        desc = "Explorer Neo-tree (Cwd)",
+        desc = "Close Explorer Neo-tree",
+        mode = "n",
       },
     },
   },
-
-  
   -- 3. Configure Snacks Pickers while forcing the dashboard back to life
   {
     "folke/snacks.nvim",
     priority = 1000,
     lazy = false,
     opts = {
-      explorer = { enabled = false }, 
-      dashboard = { enabled = true }, 
+      explorer = {
+        enabled = false,
+      },
+      dashboard = {
+        enabled = true,
+      },
       picker = {
         sources = {
           files = {
@@ -161,7 +213,9 @@ return {
     -- ourselves: cd into the directory and show ONLY the dashboard, nothing else.
     init = function()
       vim.api.nvim_create_autocmd("VimEnter", {
-        group = vim.api.nvim_create_augroup("dashboard_on_dir_start", { clear = true }),
+        group = vim.api.nvim_create_augroup("dashboard_on_dir_start", {
+          clear = true,
+        }),
         once = true,
         callback = function()
           -- Only act when launched with exactly one argument that is a directory.
@@ -183,16 +237,20 @@ return {
           local dir_buf = vim.api.nvim_get_current_buf()
           local buf = vim.api.nvim_create_buf(false, true)
           vim.api.nvim_win_set_buf(win, buf)
-          require("snacks").dashboard.open({ win = win, buf = buf })
-          pcall(vim.api.nvim_buf_delete, dir_buf, { force = true })
+          require("snacks").dashboard.open({
+            win = win,
+            buf = buf,
+          })
+          pcall(vim.api.nvim_buf_delete, dir_buf, {
+            force = true,
+          })
         end,
       })
     end,
     keys = {
       { "<leader>e", false },
-      { "<leader>E", false },
-      { "<leader>fe", false }, 
-      { "<leader>fE", false }, 
+      { "<leader>fe", false },
+      { "<leader>fE", false },
       {
         "<leader>fF",
         function()
@@ -206,8 +264,6 @@ return {
       },
     },
   },
- 
-
   -- 4. Smooth cursor transitions spec
   {
     "sphamba/smear-cursor.nvim",
@@ -219,29 +275,84 @@ return {
       hide_target_hack = false,
     },
   },
-
   -- 5. Add custom file type icon colors to match the neon cyberpunk theme
   {
     "nvim-tree/nvim-web-devicons",
     lazy = false,
-    priority = 999, 
+    priority = 999,
     opts = {
-      color_icons = true, 
+      color_icons = true,
       override = {
-        ts   = { icon = "  ", color = "#00F0FF", name = "Ts" },
-        tsx  = { icon = "", color = "#00F0FF", name = "Tsx" },
-        js   = { icon = "  ", color = "#FFD200", name = "Js" },
-        jsx  = { icon = "", color = "#FFD200", name = "Jsx" },
-        json = { icon = "", color = "#73DACA", name = "Json" },
-        toml = { icon = "", color = "#73DACA", name = "Toml" },
-        yaml = { icon = "", color = "#73DACA", name = "Yaml" },
-        md   = { icon = "", color = "#FF9F1C", name = "Md" },
-        txt  = { icon = "  ", color = "#FF9F1C", name = "Txt" },
-        lock = { icon = "", color = "#BB9AF7", name = "Lock" },
-        ["pnpm-lock.yaml"] = { icon = "  ", color = "#BB9AF7", name = "PnpmLock" },
-        lua  = { icon = "  ", color = "#FF55FF", name = "Lua" },
-        c    = { icon = "", color = "#FF4A5A", name = "C" },
-        cpp  = { icon = "", color = "#FF4A5A", name = "Cpp" },
+        ts = {
+          icon = "  ",
+          color = "#00F0FF",
+          name = "Ts",
+        },
+        tsx = {
+          icon = "",
+          color = "#00F0FF",
+          name = "Tsx",
+        },
+        js = {
+          icon = "  ",
+          color = "#FFD200",
+          name = "Js",
+        },
+        jsx = {
+          icon = "",
+          color = "#FFD200",
+          name = "Jsx",
+        },
+        json = {
+          icon = "",
+          color = "#73DACA",
+          name = "Json",
+        },
+        toml = {
+          icon = "",
+          color = "#73DACA",
+          name = "Toml",
+        },
+        yaml = {
+          icon = "",
+          color = "#73DACA",
+          name = "Yaml",
+        },
+        md = {
+          icon = "",
+          color = "#FF9F1C",
+          name = "Md",
+        },
+        txt = {
+          icon = "  ",
+          color = "#FF9F1C",
+          name = "Txt",
+        },
+        lock = {
+          icon = "",
+          color = "#BB9AF7",
+          name = "Lock",
+        },
+        ["pnpm-lock.yaml"] = {
+          icon = "  ",
+          color = "#BB9AF7",
+          name = "PnpmLock",
+        },
+        lua = {
+          icon = "  ",
+          color = "#FF55FF",
+          name = "Lua",
+        },
+        c = {
+          icon = "",
+          color = "#FF4A5A",
+          name = "C",
+        },
+        cpp = {
+          icon = "",
+          color = "#FF4A5A",
+          name = "Cpp",
+        },
       },
     },
     config = function(_, opts)

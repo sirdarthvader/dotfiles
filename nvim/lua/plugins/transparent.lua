@@ -70,7 +70,7 @@ return {
   -- Universal transparency for all themes
   {
     "LazyVim/LazyVim",
-    opts = function(_, opts)
+    opts = function(_, _)
       vim.api.nvim_create_autocmd("ColorScheme", {
         group = vim.api.nvim_create_augroup("transparent_bg", { clear = true }),
         callback = function()
