@@ -1,4 +1,4 @@
--- ASCII headers for the dashboard. One is picked each day.
+-- ASCII headers for the dashboard. One is picked at random on each launch.
 return {
   -- PROMAX
   [[

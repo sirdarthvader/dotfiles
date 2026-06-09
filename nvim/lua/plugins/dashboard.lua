@@ -2,9 +2,13 @@ local headers = require("dashboard.headers")
 local quotes = require("dashboard.quotes")
 local ascii_art = require("dashboard.ascii_art")
 
-local day = tonumber(os.date("%j"))
-local header = headers[(day % #headers) + 1]
-local quote = quotes[(day % #quotes) + 1]
+-- Seed with a high-resolution, per-launch value so every new Neovim instance
+-- (e.g. opening a different repo) gets a fresh header + quote, not once a day.
+math.randomseed((vim.uv or vim.loop).hrtime())
+
+local header = headers[math.random(#headers)]
+local quote = quotes[math.random(#quotes)]
+local art = ascii_art[math.random(#ascii_art)]
 
 -- Split the quote into lines and give each line the same indent so they align.
 local quote_lines = {}
@@ -47,7 +51,9 @@ return {
           {
             pane = 2,
             text = {
-              { ascii_art, hl = "DiagnosticInfo", align = "center" },
+              -- Left-align: ASCII art relies on its own internal spacing.
+              -- Centering would re-center each line independently and distort it.
+              { art, hl = "DiagnosticInfo", align = "left" },
             },
           },
 
