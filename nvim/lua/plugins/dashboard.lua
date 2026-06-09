@@ -19,20 +19,33 @@ return {
     "snacks.nvim",
     opts = {
       dashboard = {
-        width = 68,
-        pane_gap = 8,
+        width = 55,
+        pane_gap = 20,
         preset = {
           header = header,
+          -- Customize the options list rendered by `section = "keys"`.
+          -- Remove, reorder, or add entries here to taste.
+          -- `action` can be a `:command` string, a keymap string, or a function.
+          keys = {
+            { icon = " ", key = "f", desc = "Find File", action = ":lua Snacks.dashboard.pick('files')" },
+            { icon = " ", key = "n", desc = "New File", action = ":ene | startinsert" },
+            { icon = " ", key = "g", desc = "Find Text", action = ":lua Snacks.dashboard.pick('live_grep')" },
+            { icon = " ", key = "r", desc = "Recent Files", action = ":lua Snacks.dashboard.pick('oldfiles')" },
+            { icon = " ", key = "c", desc = "Config", action = ":lua Snacks.dashboard.pick('files', { cwd = vim.fn.stdpath('config') })" },
+            { icon = " ", key = "s", desc = "Restore Session", section = "session" },
+            { icon = "󰒲 ", key = "L", desc = "Lazy", action = ":Lazy", enabled = package.loaded.lazy ~= nil },
+            { icon = " ", key = "q", desc = "Quit", action = ":qa" },
+          },
         },
         sections = {
           -- RIGHT PANE — ASCII Art
           {
             pane = 2,
             text = {
-              { ascii_art, hl = "DiagnosticInfo" },
+              { ascii_art, hl = "DiagnosticInfo", align = "center" },
             },
-            padding = 2,
           },
+          
           -- LEFT PANE — header + greeting + quote + keys
           { pane = 1, section = "header", padding = 2 },
           {
@@ -47,7 +60,7 @@ return {
             pane = 1,
             text = quote_lines,
             padding = 1,
-            gap = 2,
+            gap = 3,
           },
         },
       },
