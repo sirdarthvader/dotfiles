@@ -139,28 +139,8 @@ export PATH="$DENO_INSTALL/bin:$PATH"
 
 #TMUX ALIASES
 alias tls='tmux ls'
-
-# TMUX attach and new session with session name as argument, if no session name provided, show usage
-tat(){
-  local session_name="$1"
-  if [ -z "$session_name" ]; then
-    echo "Missing session name"
-    echo "Usage: tat <session_name>"
-    return 1
-  fi
-  tmux attach-session -t "$session_name"
-}
-
-# TMUX new session with session name as argument, if no session name provided, show usage
-tns() {
-  local session_name="$1"
-  if [ -z "$session_name" ]; then
-    echo "Missing session name"
-    echo "Usage: tns <session_name>"
-    return 1
-  fi
-  tmux new-session -s "$session_name"
-}
+# t: fuzzy-pick a project -> tmux session (t . = current dir)
+alias t='~/.config/tmux/sessionizer.sh'
 
 
 
@@ -377,15 +357,6 @@ fcd() {
   dir=$(fd --type d --hidden --follow --exclude .git | fzf --query="$1" --select-1 --exit-0) && cd "$dir"
 }
 
-# fsearch: fuzzy search file contents then open at the matching line
-fsearch() {
-  local result file line
-  result=$(grep -rn --color=never "${1:-.}" . 2>/dev/null | fzf --delimiter=: --preview 'bat --color=always --highlight-line {2} {1}' --preview-window=right:60%:+{2}-10) || return
-  file=$(echo "$result" | cut -d: -f1)
-  line=$(echo "$result" | cut -d: -f2)
-  ${EDITOR:-code} --goto "$file:$line"
-}
-
 # fh: fuzzy search shell history and copy to clipboard
 fh() {
   local cmd
@@ -422,7 +393,8 @@ alias ls='eza --icons --group-directories-first'
 alias ll='eza --icons --group-directories-first -la'
 alias lt='eza --icons --group-directories-first --tree --level=2'
 alias lta='eza --icons --group-directories-first --tree --level=2 -a'
-alias lg='eza --icons --group-directories-first -la --git'
+alias llg='eza --icons --group-directories-first -la --git'
+alias lg='lazygit'
 
 # ============================================================
 # ZOXIDE — smarter cd
@@ -442,7 +414,7 @@ rgs() {
       --preview-window=right:60%:+{2}-10) || return
   file=$(echo "$result" | cut -d: -f1)
   line=$(echo "$result" | cut -d: -f2)
-  ${EDITOR:-code} --goto "$file:$line"
+  ${EDITOR:-nvim} "+$line" "$file"
 }
 
 # ============================================================

@@ -1,6 +1,5 @@
-# Theme
-theme = nord
-background = #282c35
+# Theme (matches tmux + nvim)
+theme = TokyoNight Night
 
 # Font
 font-family = "CaskaydiaCove Nerd Font"
@@ -11,16 +10,18 @@ font-thicken-strength = 1
 # Cursor
 cursor-style = block
 cursor-style-blink = false
-cursor-color = #A3BE8C
 shell-integration-features = no-cursor
 mouse-hide-while-typing = true
 
-# Shell
-# command = zsh --login -c "if command -v tmux >/dev/null 2>&1; then tmux attach || tmux; else zsh; fi"
+# Shell: always land in tmux (attach to the last session, or start "main")
+command = /bin/zsh --login -c "tmux attach 2>/dev/null || tmux new-session -s main"
+
+# Left Option sends Alt (fzf Alt-C, nvim <A-j>/<A-k>); right Option still types special chars
+macos-option-as-alt = left
 
 # Window
 macos-titlebar-style = transparent
-background-opacity = 0.70
+background-opacity = 0.95
 background-blur = macos-glass-regular
 window-save-state = always
 maximize = true

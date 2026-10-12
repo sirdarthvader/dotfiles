@@ -19,7 +19,7 @@ if [ "$OS" = "Darwin" ]; then
   fi
 
   echo "📦 Installing CLI tools..."
-  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli
+  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise
   brew install --cask font-caskaydia-cove-nerd-font
 
 elif [ "$OS" = "Linux" ]; then
@@ -105,5 +105,5 @@ echo "  1. Restart your terminal (or run: source ~/.zshrc)"
 echo "  2. Open nvim — plugins will auto-install on first launch"
 echo "  3. Run :Copilot auth inside Neovim to sign in to GitHub Copilot"
 echo "  4. Run 'claude auth' in terminal to sign in to Claude Code"
-echo "  5. Start tmux with: tmux new-session -s work"
+echo "  5. Open Ghostty (auto-attaches tmux), then prefix + I to install tmux plugins; use 't' or prefix + f to open a project"
 echo ""

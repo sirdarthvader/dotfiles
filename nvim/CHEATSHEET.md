@@ -166,7 +166,7 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 
 | Key                             | Action                               |
 | ------------------------------- | ------------------------------------ |
-| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Go to left / down / up / right split |
+| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Go to left / down / up / right split (or tmux pane) |
 | `<C-w>w`                        | Cycle through splits                 |
 | `<C-w>p`                        | Go to previous split                 |
 
@@ -275,7 +275,7 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `<Space>uz`               | Zen mode (distraction-free)        |
 | `<Space>uC`               | Try colorschemes with live preview |
 
-> **Alt/Option keys on macOS:** `<A-j>`, `<A-k>`, `<A-h>`, `<A-i>` only work if Ghostty sends Option as Alt. Add `macos-option-as-alt = true` to `ghostty/config` to enable them.
+> **Alt/Option keys on macOS:** `<A-j>`, `<A-k>`, `<A-h>`, `<A-i>` use the **left** Option key (`macos-option-as-alt = left` in `ghostty/config`).
 
 ## 16. Sessions, scratch and history
 
@@ -312,20 +312,27 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 
 ## 18. tmux (prefix is `<C-a>`)
 
-| Key                       | Action                                            |
-| ------------------------- | ------------------------------------------------- |
-| `<C-a> \|` / `<C-a> -`    | Split pane right / below                          |
-| `<C-a> h j k l`           | Move between panes                                |
-| `<C-h> <C-j> <C-k> <C-l>` | Move between panes (no prefix) when not in Neovim |
-| `<C-a> H J K L`           | Resize pane (repeatable)                          |
-| `<C-a> z`                 | Zoom pane                                         |
-| `<C-a> x` / `<C-a> X`     | Kill pane / window                                |
-| `<C-a> c`                 | New window                                        |
-| `<C-a> Space`             | Last window                                       |
-| `<C-a> [`                 | Copy mode (`v` select, `y` copy)                  |
-| `<C-a> r`                 | Reload tmux config                                |
+Ghostty opens straight into tmux. One **session per project**, each with windows `1 code` (nvim), `2 run` (dev server / tests), `3 shell`.
 
-> Inside Neovim, `<C-h/j/k/l>` only moves between **Neovim** splits. To jump from Neovim to a tmux pane use `<C-a> h/j/k/l`. (Seamless movement needs the `vim-tmux-navigator` Neovim plugin, which isn't installed.)
+| Key                       | Action                                                  |
+| ------------------------- | ------------------------------------------------------- |
+| `<C-a> f` / `t` in shell  | Pick a project → switch to / create its session (`t .` = current dir) |
+| `<C-a> s`                 | Session list                                            |
+| `<C-a> S`                 | Last session                                            |
+| `<C-a> 1` `2` `3`         | Go to window                                            |
+| `<C-a> Space`             | Last window                                             |
+| `<C-a> c` / `<C-a> ,`     | New window / rename window                              |
+| `<C-a> g`                 | Lazygit popup                                           |
+| `<C-a> \|` / `<C-a> -`    | Split pane right / below                                |
+| `<C-h> <C-j> <C-k> <C-l>` | Move between panes and nvim splits (no prefix)          |
+| `<C-a> H J K L`           | Resize pane (repeatable)                                |
+| `<C-a> z`                 | Zoom pane                                               |
+| `<C-a> x` / `<C-a> X`     | Kill pane / window                                      |
+| `<C-a> [`                 | Copy mode (`v` select, `y` copy)                        |
+| `<C-a> d`                 | Detach (everything keeps running)                       |
+| `<C-a> r`                 | Reload tmux config                                      |
+
+> The session pill (bottom-left) turns yellow while the prefix is active. After a reboot tmux restores windows; in nvim press `<Space>qs` to restore buffers.
 
 ## 19. Maintenance
 

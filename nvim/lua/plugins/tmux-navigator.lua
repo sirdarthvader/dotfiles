@@ -1,0 +1,13 @@
+-- <C-h/j/k/l> moves across nvim splits and tmux panes (pairs with the bindings in tmux.conf).
+return {
+  {
+    "christoomey/vim-tmux-navigator",
+    cmd = { "TmuxNavigateLeft", "TmuxNavigateDown", "TmuxNavigateUp", "TmuxNavigateRight" },
+    keys = {
+      { "<C-h>", "<cmd>TmuxNavigateLeft<cr>", desc = "Go to Left Window/Pane" },
+      { "<C-j>", "<cmd>TmuxNavigateDown<cr>", desc = "Go to Lower Window/Pane" },
+      { "<C-k>", "<cmd>TmuxNavigateUp<cr>", desc = "Go to Upper Window/Pane" },
+      { "<C-l>", "<cmd>TmuxNavigateRight<cr>", desc = "Go to Right Window/Pane" },
+    },
+  },
+}
