@@ -471,3 +471,5 @@ y() {
   rm -f "$tmp"
 }
 eval "$(mise activate zsh)"
+
+security find-certificate -a -p /System/Library/Keychains/SystemRootCertificates.keychain /Library/Keychains/System.keychain > /var/root/.custom-certs.pem && export {AWS_CA_BUNDLE,NODE_EXTRA_CA_CERTS,REQUESTS_CA_BUNDLE,SSL_CERT_FILE}=/var/root/.custom-certs.pem && export DENO_TLS_CA_STORE='system'

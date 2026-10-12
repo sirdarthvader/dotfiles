@@ -6,13 +6,13 @@
 #   tmux-theme.sh <name>  → apply specific theme
 
 THEME_FILE="/tmp/tmux-current-theme"
-THEMES=(matrix cyberpunk dracula nord catppuccin gruvbox)
+THEMES=(tokyonight kanagawa matrix cyberpunk dracula nord catppuccin gruvbox)
 
 current_theme() {
   if [[ -f "$THEME_FILE" ]]; then
     cat "$THEME_FILE"
   else
-    echo "matrix"
+    echo "tokyonight"
   fi
 }
 
@@ -21,6 +21,24 @@ apply_theme() {
   echo "$theme" > "$THEME_FILE"
 
   case "$theme" in
+    tokyonight)
+      tmux set -g status-style "bg=#16161e,fg=#c0caf5"
+      tmux set -g window-status-current-format "#[fg=#16161e,bg=#7aa2f7,bold] #I:#W #[fg=#7aa2f7,bg=#16161e]"
+      tmux set -g window-status-format "#[fg=#565f89,bg=#16161e] #I:#W "
+      tmux set -g status-left "#[fg=#16161e,bg=#9ece6a,bold]  #S #[fg=#9ece6a,bg=#16161e] "
+      tmux set -g pane-active-border-style "fg=#7aa2f7"
+      tmux set -g pane-border-style "fg=#565f89"
+      tmux set -g message-style "bg=#16161e,fg=#7aa2f7,bold"
+      ;;
+    kanagawa)
+      tmux set -g status-style "bg=#16161D,fg=#DCD7BA"
+      tmux set -g window-status-current-format "#[fg=#16161D,bg=#7E9CD8,bold] #I:#W #[fg=#7E9CD8,bg=#16161D]"
+      tmux set -g window-status-format "#[fg=#727169,bg=#16161D] #I:#W "
+      tmux set -g status-left "#[fg=#16161D,bg=#98BB6C,bold]  #S #[fg=#98BB6C,bg=#16161D] "
+      tmux set -g pane-active-border-style "fg=#7E9CD8"
+      tmux set -g pane-border-style "fg=#54546D"
+      tmux set -g message-style "bg=#16161D,fg=#7E9CD8,bold"
+      ;;
     matrix)
       tmux set -g status-style "bg=#0a0a0a,fg=#33ff33"
       tmux set -g window-status-current-format "#[fg=#0a0a0a,bg=#00ff41,bold] #I:#W #[fg=#00ff41,bg=#0a0a0a]"

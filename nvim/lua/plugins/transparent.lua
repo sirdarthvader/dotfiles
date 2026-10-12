@@ -1,69 +1,45 @@
 return {
-  -- Cyberdream — high-contrast, transparency-first theme
+  -- Kanagawa Wave — kept available (not active)
   {
-    "scottmckendry/cyberdream.nvim",
+    "rebelot/kanagawa.nvim",
+    lazy = true,
+    opts = {
+      theme = "wave",
+      transparent = true,
+    },
+  },
+
+  -- Tokyonight Night — vivid but balanced, first-class transparency
+  {
+    "folke/tokyonight.nvim",
     lazy = false,
     priority = 1000,
     opts = {
+      style = "night",
       transparent = true,
-      italic_comments = true,
-      hide_fillchars = true,
-      borderless_pickers = true,
       terminal_colors = true,
-      highlights = {
-        -- Readable line numbers
-        LineNr = { fg = "#a0aab6" },
-        LineNrAbove = { fg = "#a0aab6" },
-        LineNrBelow = { fg = "#a0aab6" },
-        CursorLineNr = { fg = "#ffffff", bold = true },
-
-        -- Readable comments
-        Comment = { fg = "#a0aab6", italic = true },
-        ["@comment"] = { fg = "#a0aab6", italic = true },
-
-        -- File explorer — directories & files
-        Directory = { fg = "#5ef1ff", bold = true },
-
-        -- Tree/explorer structure
-        NvimTreeFolderName = { fg = "#5ef1ff", bold = true },
-        NvimTreeOpenedFolderName = { fg = "#5ef1ff", bold = true },
-        NvimTreeRootFolder = { fg = "#ff6e5a", bold = true },
-        NvimTreeFileName = { fg = "#e0e0e0" },
-
-        -- Git status in explorer
-        NvimTreeGitDirty = { fg = "#ffbd5e" },
-        NvimTreeGitNew = { fg = "#5eff6c" },
-        NvimTreeGitDeleted = { fg = "#ff6e5a" },
-        NvimTreeGitStaged = { fg = "#5eff6c" },
-        NvimTreeGitIgnored = { fg = "#7b8496" },
-
-        -- Snacks explorer specific
-        SnacksExplorerDir = { fg = "#5ef1ff", bold = true },
-        SnacksExplorerFile = { fg = "#e0e0e0" },
-        SnacksExplorerGitModified = { fg = "#ffbd5e" },
-        SnacksExplorerGitAdded = { fg = "#5eff6c" },
-        SnacksExplorerGitDeleted = { fg = "#ff6e5a" },
-      },
-    },
-  },
-
-  -- Set cyberdream as the active colorscheme
-  {
-    "LazyVim/LazyVim",
-    opts = {
-      colorscheme = "cyberdream",
-    },
-  },
-
-  -- Tokyonight native transparency (kept as fallback)
-  {
-    "folke/tokyonight.nvim",
-    opts = {
-      transparent = true,
       styles = {
+        comments = { italic = true },
+        keywords = { italic = true },
         sidebars = "transparent",
         floats = "transparent",
       },
+      on_highlights = function(hl, c)
+        -- Punchier syntax + readable UI on a translucent background
+        hl.Comment = { fg = "#7f86a8", italic = true }
+        hl.LineNr = { fg = "#565f89" }
+        hl.CursorLineNr = { fg = "#c0caf5", bold = true }
+        hl.NormalFloat = { bg = "none" }
+        hl.FloatBorder = { fg = c.blue, bg = "none" }
+      end,
+    },
+  },
+
+  -- Set tokyonight as the active colorscheme
+  {
+    "LazyVim/LazyVim",
+    opts = {
+      colorscheme = "tokyonight-night",
     },
   },
 
@@ -107,19 +83,19 @@ return {
             vim.api.nvim_set_hl(0, group, hl)
           end
 
-          -- Force readable explorer/tree colors on transparent bg
-          vim.api.nvim_set_hl(0, "Directory", { fg = "#5ef1ff", bold = true })
-          vim.api.nvim_set_hl(0, "SnacksExplorerNormal", { fg = "#e0e0e0" })
-          vim.api.nvim_set_hl(0, "SnacksExplorerDir", { fg = "#5ef1ff", bold = true })
-          vim.api.nvim_set_hl(0, "SnacksExplorerFile", { fg = "#e0e0e0" })
-          vim.api.nvim_set_hl(0, "SnacksPickerDir", { fg = "#5ef1ff", bold = true })
-          vim.api.nvim_set_hl(0, "SnacksPickerFile", { fg = "#e0e0e0" })
-          vim.api.nvim_set_hl(0, "SnacksPickerPathHidden", { fg = "#7b8496" })
-          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusAdded", { fg = "#5eff6c" })
-          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusModified", { fg = "#ffbd5e" })
-          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusDeleted", { fg = "#ff6e5a" })
-          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusUntracked", { fg = "#bd5eff" })
-          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusIgnored", { fg = "#7b8496" })
+          -- Force readable explorer/tree colors on transparent bg (Tokyonight Night palette)
+          vim.api.nvim_set_hl(0, "Directory", { fg = "#7aa2f7", bold = true })
+          vim.api.nvim_set_hl(0, "SnacksExplorerNormal", { fg = "#c0caf5" })
+          vim.api.nvim_set_hl(0, "SnacksExplorerDir", { fg = "#7aa2f7", bold = true })
+          vim.api.nvim_set_hl(0, "SnacksExplorerFile", { fg = "#c0caf5" })
+          vim.api.nvim_set_hl(0, "SnacksPickerDir", { fg = "#7aa2f7", bold = true })
+          vim.api.nvim_set_hl(0, "SnacksPickerFile", { fg = "#c0caf5" })
+          vim.api.nvim_set_hl(0, "SnacksPickerPathHidden", { fg = "#565f89" })
+          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusAdded", { fg = "#9ece6a" })
+          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusModified", { fg = "#e0af68" })
+          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusDeleted", { fg = "#f7768e" })
+          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusUntracked", { fg = "#bb9af7" })
+          vim.api.nvim_set_hl(0, "SnacksPickerGitStatusIgnored", { fg = "#565f89" })
         end,
       })
     end,

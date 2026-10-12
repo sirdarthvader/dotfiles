@@ -8,15 +8,125 @@ math.randomseed((vim.uv or vim.loop).hrtime())
 
 local header = headers[math.random(#headers)]
 local quote = quotes[math.random(#quotes)]
-local art = ascii_art[math.random(#ascii_art)]
 
--- Split the quote into lines and give each line the same indent so they align.
-local quote_lines = {}
-for line in (quote .. "\n"):gmatch("([^\n]*)\n") do
-  line = line:gsub("^%s+", ""):gsub("%s+$", "")
-  table.insert(quote_lines, { "  " .. line, hl = "WarningMsg" })
-  table.insert(quote_lines, { "\n" })
+-- Strip leading/trailing blank lines so arts don't add stray vertical gaps.
+local function trim_vertical(s)
+  local lines = {}
+  for line in (s .. "\n"):gmatch("([^\n]*)\n") do
+    lines[#lines + 1] = line
+  end
+  while lines[1] and lines[1]:match("^%s*$") do
+    table.remove(lines, 1)
+  end
+  while lines[#lines] and lines[#lines]:match("^%s*$") do
+    table.remove(lines)
+  end
+  return table.concat(lines, "\n")
 end
+
+local function art_size(s)
+  local height, width = 0, 0
+  for line in (s .. "\n"):gmatch("([^\n]*)\n") do
+    height = height + 1
+    local w = vim.fn.strdisplaywidth(line)
+    if w > width then
+      width = w
+    end
+  end
+  return height, width
+end
+
+-- Only choose arts that fit the current window, so the dashboard stays
+-- vertically centered instead of overflowing and pinning to the top.
+-- Oversized arts are skipped (not deleted) — they'll show on bigger windows.
+--
+-- Selection works like a carousel: a shuffled "deck" of art indices is saved to
+-- disk and dealt one card per launch. No art repeats until the whole deck has
+-- been shown, then it reshuffles — and the reshuffle never starts with the art
+-- you just saw, so you never get the same image twice in a row across restarts.
+local STATE_PATH = vim.fn.stdpath("state") .. "/dashboard_art.json"
+
+local function load_state()
+  local f = io.open(STATE_PATH, "r")
+  if not f then
+    return {}
+  end
+  local content = f:read("*a")
+  f:close()
+  local ok, data = pcall(vim.json.decode, content)
+  return (ok and type(data) == "table") and data or {}
+end
+
+local function save_state(state)
+  local f = io.open(STATE_PATH, "w")
+  if not f then
+    return
+  end
+  f:write(vim.json.encode(state))
+  f:close()
+end
+
+-- Fisher-Yates shuffle; if `avoid_first` is given, make sure the deck doesn't
+-- start with that index (prevents a back-to-back repeat across reshuffles).
+local function shuffle(list, avoid_first)
+  for i = #list, 2, -1 do
+    local j = math.random(i)
+    list[i], list[j] = list[j], list[i]
+  end
+  if avoid_first and #list > 1 and list[1] == avoid_first then
+    list[1], list[#list] = list[#list], list[1]
+  end
+  return list
+end
+
+local function pick_art(arts)
+  local max_h = vim.o.lines - 4 -- leave room for cmdline/status + breathing space
+  local max_w = vim.o.columns - 55 - 20 -- window minus left pane width + pane_gap
+
+  -- Trim + measure every art once; collect the indices that fit the window.
+  local trimmed, fit_idx = {}, {}
+  local smallest, smallest_h = nil, math.huge
+  for i, raw in ipairs(arts) do
+    local art = trim_vertical(raw)
+    trimmed[i] = art
+    local h, w = art_size(art)
+    if h < smallest_h then
+      smallest, smallest_h = art, h
+    end
+    if h <= max_h and w <= max_w then
+      fit_idx[#fit_idx + 1] = i
+    end
+  end
+
+  -- Tiny window where nothing fits: just show the most compact art.
+  if #fit_idx == 0 then
+    return smallest
+  end
+
+  -- Signature of the fitting set, so the deck rebuilds if a window resize
+  -- changes which arts are eligible.
+  local sig = table.concat(fit_idx, ",")
+
+  local state = load_state()
+  local order, pos, last = state.order, state.pos or 1, state.last
+
+  -- Build a fresh shuffled deck of the fitting arts if the saved deck is
+  -- missing, exhausted, or no longer matches the current fitting set.
+  if state.sig ~= sig or type(order) ~= "table" or pos > #order then
+    order = {}
+    for _, idx in ipairs(fit_idx) do
+      order[#order + 1] = idx
+    end
+    shuffle(order, last) -- never start a new cycle with the last shown art
+    pos = 1
+  end
+
+  local chosen = order[pos]
+  save_state({ order = order, pos = pos + 1, last = chosen, sig = sig })
+  return trimmed[chosen]
+end
+
+local art = pick_art(ascii_art)
 
 return {
   {
@@ -48,6 +158,13 @@ return {
         },
         sections = {
           -- RIGHT PANE — ASCII Art
+
+          {
+            pane = 2,
+            text = { { quote, hl = "WarningMsg" } },
+            padding = 1,
+            gap = 3,
+          },
           {
             pane = 2,
             text = {
@@ -66,13 +183,6 @@ return {
           },
           { pane = 1, section = "keys", gap = 1, padding = 1 },
           { pane = 1, section = "startup", padding = 2 },
-
-          {
-            pane = 1,
-            text = quote_lines,
-            padding = 1,
-            gap = 3,
-          },
         },
       },
     },
