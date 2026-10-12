@@ -83,6 +83,13 @@ echo "   ✓ tmux config + widgets linked"
 backup_if_real ~/.zshrc
 ln -sfn "$DOTFILES_DIR/zsh/zshrc" ~/.zshrc
 echo "   ✓ Shell config linked"
+
+# bat — Tokyo Night theme (also used by delta)
+backup_if_real ~/.config/bat
+ln -sfn "$DOTFILES_DIR/bat" ~/.config/bat
+bat cache --build >/dev/null
+git config --global delta.syntax-theme tokyonight_night
+echo "   ✓ bat theme linked"
 # ── tmux plugin manager (TPM) ────────────────
 # The tmux config loads plugins from ~/.tmux/plugins; clone TPM so they work.
 if [ ! -d ~/.tmux/plugins/tpm ]; then

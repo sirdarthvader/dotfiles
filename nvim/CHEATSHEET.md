@@ -1,8 +1,22 @@
-# Neovim Cheat Sheet (LazyVim + this config)
+# Dev Cheat Sheet (Ghostty + tmux + Neovim/LazyVim + lazygit)
 
-`<Space>` is the **leader** key. `<C-x>` means Ctrl+x, `<A-x>` means Alt/Option+x, `<S-x>` means Shift+x.
+`<Space>` is the **leader** key. `<C-x>` means Ctrl+x, `<A-x>` means Alt/Option+x (left Option key), `<S-x>` means Shift+x.
 
 > Lost? Press `<Space>` and wait: a popup lists every shortcut. `<Space>sk` searches all keymaps.
+
+## 0. Daily workflow
+
+1. Open Ghostty: you land in tmux automatically (your last session, or a new one called `main`).
+2. `<C-a> f` (or `t` in a shell): pick a project. The first time, this creates a session named after the repo with three windows:
+   - `1 code`: nvim, already open
+   - `2 run`: `pnpm dev`, `pnpm jest --watch`, builds
+   - `3 shell`: one-off commands (`pnpm i`, `pc`, `gcnb`...)
+3. Code in nvim. Check the server or tests with `<C-a> 2`, and come back with `<C-a> Space`.
+4. Commit: `<Space>gg` in nvim (or `<C-a> g` from any window) opens lazygit; `q` returns.
+5. Another repo: `<C-a> f` again. `<C-a> S` toggles between the last two projects.
+6. End of day: just close Ghostty. Everything keeps running. tmux saves the layout every 15 min, so it also survives a reboot (then press `<Space>qs` in nvim to reopen your files).
+
+**Rules:** no Ghostty tabs or splits (tmux does that). Don't quit nvim to run a command; switch tmux window instead. Files go in nvim splits; processes go in tmux windows.
 
 ## 1. Modes
 
@@ -69,7 +83,7 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `x`               | Delete character                                                       |
 | `r<char>`         | Replace one character                                                  |
 | `J`               | Join line below onto this one                                          |
-| `<A-j>` / `<A-k>` | Move line/selection down / up (needs Option-as-Alt, see section 15)    |
+| `<A-j>` / `<A-k>` | Move line/selection down / up (left Option key)                        |
 | `<C-a>` / `<C-x>` | Increment / decrement number, bool, date (in tmux press `<C-a>` twice) |
 | `gco` / `gcO`     | Add comment below / above                                              |
 
@@ -334,10 +348,93 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 
 > The session pill (bottom-left) turns yellow while the prefix is active. After a reboot tmux restores windows; in nvim press `<Space>qs` to restore buffers.
 
-## 19. Maintenance
+## 19. Lazygit (`<Space>gg` in nvim, `<C-a> g` in tmux, `lg` in shell)
+
+| Key                 | Action                                         |
+| ------------------- | ---------------------------------------------- |
+| `1`-`5` / `[` `]`   | Jump to panel (status, files, branches, commits, stash) / switch tab |
+| `j` / `k`           | Move                                           |
+| `Space`             | Stage / unstage file (or hunk/line in the diff view) |
+| `a`                 | Stage / unstage all                            |
+| `Enter`             | Open file diff to stage individual hunks/lines |
+| `c`                 | Commit                                         |
+| `A`                 | Amend last commit                              |
+| `P` / `p`           | Push / pull                                    |
+| `n` (branches)      | New branch                                     |
+| `Space` (branches)  | Checkout branch                                |
+| `d`                 | Discard changes                                |
+| `s`                 | Stash                                          |
+| `e`                 | Edit file in nvim                              |
+| `?`                 | All keys for the current panel                 |
+| `q` / `Esc`         | Quit / back                                    |
+
+## 20. Shell (zsh)
+
+**tmux and tools**
+
+| Command        | Action                                                         |
+| -------------- | -------------------------------------------------------------- |
+| `t` / `t .`    | Pick a project / use the current dir → tmux session (code/run/shell) |
+| `tls`          | List tmux sessions                                             |
+| `lg`           | Lazygit                                                        |
+| `z <name>`     | Jump to a frequently used directory (zoxide)                   |
+| `y`            | Yazi file manager; quitting `cd`s into the last dir            |
+| `ls` `ll` `lt` `llg` | eza: list / long list / tree / long list with git status |
+| `cat file`     | bat (syntax-highlighted)                                       |
+
+**Fuzzy finding (fzf)**
+
+| Key / command  | Action                                       |
+| -------------- | -------------------------------------------- |
+| `<C-t>`        | Insert a file path into the command line     |
+| `<C-r>`        | Search shell history                         |
+| `<A-c>`        | `cd` into a subdirectory (left Option + c)   |
+| `fe [query]`   | Find a file and open it in nvim              |
+| `fcd [query]`  | `cd` into a subdirectory                     |
+| `rgs <text>`   | Search file contents, open the match in nvim at that line |
+| `fh`           | Pick a history command and copy it           |
+| `fkill`        | Pick a process and kill it                   |
+| `<C-/>` in fzf | Toggle preview                               |
+
+**Git**
+
+| Alias               | Command                                                 |
+| ------------------- | ------------------------------------------------------- |
+| `zz` / `gd`         | `git status` / `git diff`                               |
+| `gl`                | Short graph log (last 10)                               |
+| `gco` / `gcb`       | Checkout / checkout new branch                          |
+| `gb` / `gc`         | `git branch` / `git commit --verbose`                   |
+| `gac [msg]`         | Stage all and commit (default message `WIP`)            |
+| `gcane`             | Amend last commit without editing message               |
+| `gp` / `gpb` / `gpfb` | Push / push current branch / force-with-lease current branch |
+| `gpo <branch>`      | Pull from origin                                        |
+| `gcnb <name>`       | Update main, then create a new branch                   |
+| `gum` / `gur`       | Update main, then merge / rebase it into current branch |
+| `gss` / `gsp` / `gsl` | Stash save / pop / list                               |
+| `gbc`               | Delete merged local branches                            |
+
+**Project (pnpm / CDF):** `i` install, `pb` build, `pbs` build without nx cache, `bnp` build + pack, `pj` jest, `pc` changeset, `cdfup` / `cdfrst` CDF upgrade / reset deps, `killport <port>`.
+
+## 21. Ghostty
+
+| Key / setting   | What it does                                                          |
+| --------------- | --------------------------------------------------------------------- |
+| New window      | Opens straight into tmux (attaches the last session)                  |
+| Left Option     | Sends Alt (`<A-c>`, `<A-j>`...); right Option still types special characters |
+| `<Cmd-S-,>`     | Reload `ghostty/config`                                               |
+| `<Cmd-+>` / `<Cmd-->` / `<Cmd-0>` | Font bigger / smaller / reset                       |
+
+Theme is **TokyoNight Night** everywhere: Ghostty, tmux, nvim, bat and delta (git diffs).
+
+## 22. Maintenance
 
 | Command                  | What it does                                             |
 | ------------------------ | -------------------------------------------------------- |
+| `<C-a> I`                | Install tmux plugins (first run on a new machine)        |
+| `<C-a> U`                | Update tmux plugins                                      |
+| `<C-a> r`                | Reload tmux config                                       |
+| `sz`                     | Reload `~/.zshrc`                                        |
+| `bat cache --build`      | Rebuild bat themes after adding one to `bat/themes`      |
 | `:Lazy`                  | Plugin manager (`U` update, `S` sync, `X` clean)         |
 | `:Lazy restore`          | Reinstall exact versions from `lazy-lock.json`           |
 | `:LazyExtras`            | Enable/disable language packs and features (`x` toggles) |

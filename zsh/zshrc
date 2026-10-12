@@ -94,7 +94,7 @@ setopt share_history
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git zsh-autosuggestions fast-syntax-highlighting zsh-autocomplete)
+plugins=(zsh-autosuggestions fast-syntax-highlighting)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -168,6 +168,9 @@ alias cdh='cd ~/Documents'
 ## Git shortcuts
 alias zz='git status'
 alias gd='git diff'
+alias gp='git push'
+alias gb='git branch'
+alias gc='git commit --verbose'
 alias gl='git log --oneline --graph --decorate --all -10'
 alias gcb='git checkout -b'
 alias gsl='git stash list'
@@ -333,7 +336,7 @@ export FZF_ALT_C_OPTS="
 "
 
 # bat config: default theme and style
-export BAT_THEME="TwoDark"
+export BAT_THEME="tokyonight_night"
 export BAT_STYLE="numbers,changes,header"
 
 # Use bat as the man pager for colorized man pages
@@ -370,20 +373,6 @@ fkill() {
   if [ -n "$pid" ]; then
     echo "$pid" | xargs kill -${1:-9}
   fi
-}
-
-# ftree: fd-powered tree view (better than tree, respects .gitignore)
-ftree() {
-  local depth="${1:-3}"
-  fd --max-depth "$depth" --color always | sed 's|[^/]*/|  │ |g'
-}
-
-# fbat: fuzzy find and preview with bat (read-only exploration)
-fbat() {
-  fd --type f --hidden --follow --exclude .git | fzf --query="$1" \
-    --preview 'bat --color=always --style=numbers {}' \
-    --preview-window=right:65%:wrap \
-    --bind 'enter:execute(bat --paging=always {})'
 }
 
 # ============================================================
@@ -426,7 +415,7 @@ rgs() {
 #   git config --global delta.navigate true
 #   git config --global delta.side-by-side true
 #   git config --global delta.line-numbers true
-#   git config --global delta.syntax-theme TwoDark
+#   git config --global delta.syntax-theme tokyonight_night
 #   git config --global merge.conflictstyle zdiff3
 
 # ============================================================
