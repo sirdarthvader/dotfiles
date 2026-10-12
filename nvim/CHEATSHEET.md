@@ -1,0 +1,341 @@
+# Neovim Cheat Sheet (LazyVim + this config)
+
+`<Space>` is the **leader** key. `<C-x>` means Ctrl+x, `<A-x>` means Alt/Option+x, `<S-x>` means Shift+x.
+
+> Lost? Press `<Space>` and wait: a popup lists every shortcut. `<Space>sk` searches all keymaps.
+
+## 1. Modes
+
+| Key                 | Mode                                                   |
+| ------------------- | ------------------------------------------------------ |
+| `Esc`               | Back to **Normal** mode (also clears search highlight) |
+| `i` / `a`           | Insert before / after cursor                           |
+| `I` / `A`           | Insert at start / end of line                          |
+| `o` / `O`           | New line below / above, in insert mode                 |
+| `v` / `V` / `<C-v>` | Visual: characters / lines / block (columns)           |
+| `:`                 | Command line                                           |
+
+## 2. Survival
+
+| Key                 | Action                                          |
+| ------------------- | ----------------------------------------------- |
+| `<C-s>`             | Save (works in any mode)                        |
+| `:w` / `:q` / `:wq` | Save / close window / save and close            |
+| `:q!`               | Close without saving                            |
+| `<Space>qq`         | Quit everything                                 |
+| `u` / `<C-r>`       | Undo / redo                                     |
+| `<Space>su`         | Undo tree (browse every past state)             |
+| `.`                 | Repeat last change (the most useful key in Vim) |
+
+## 3. Moving around
+
+| Key                   | Action                                                                     |
+| --------------------- | -------------------------------------------------------------------------- |
+| `h j k l`             | Left, down, up, right                                                      |
+| `w` / `b` / `e`       | Next word / previous word / end of word                                    |
+| `0` / `^` / `$`       | Line start / first non-blank / line end                                    |
+| `gg` / `G` / `42G`    | Top / bottom / line 42                                                     |
+| `<C-d>` / `<C-u>`     | Half page down / up                                                        |
+| `%`                   | Jump to matching bracket                                                   |
+| `{` / `}`             | Previous / next paragraph or block                                         |
+| `f<char>` / `t<char>` | Jump to / just before next `<char>` on the line (`;` repeats)              |
+| `s`                   | **Flash**: type 2 letters, then the label shown to jump anywhere on screen |
+| `S`                   | Flash Treesitter: select a whole function/block                            |
+| `<C-o>` / `<C-i>`     | Jump back / forward (works across files)                                   |
+| `ma` / `` `a ``       | Set mark `a` / jump to mark `a`                                            |
+
+## 4. Editing: operator + motion
+
+Vim edits are **verb + object**. Learn a few of each and combine them.
+
+| Verb        |                          | Object         |                          |
+| ----------- | ------------------------ | -------------- | ------------------------ |
+| `d`         | delete                   | `w`            | word                     |
+| `c`         | change (delete + insert) | `iw` / `aw`    | inner / around word      |
+| `y`         | yank (copy)              | `i"` / `a"`    | inside / around quotes   |
+| `>` / `<`   | indent / dedent          | `i(` `i{` `i[` | inside brackets          |
+| `gc`        | comment                  | `it`           | inside HTML/JSX tag      |
+| `gU` / `gu` | upper / lower case       | `if` / `af`    | inside / around function |
+|             |                          | `ic` / `ac`    | inside / around class    |
+|             |                          | `ia`           | argument                 |
+
+Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole function, `gcc` toggle comment on line, `dd` delete line, `yy` copy line, `>>` indent line.
+
+| Key               | Action                                                                 |
+| ----------------- | ---------------------------------------------------------------------- |
+| `p` / `P`         | Paste after / before                                                   |
+| `[y` / `]y`       | After pasting: cycle through older yanks (yanky)                       |
+| `<Space>p`        | Yank history picker                                                    |
+| `x`               | Delete character                                                       |
+| `r<char>`         | Replace one character                                                  |
+| `J`               | Join line below onto this one                                          |
+| `<A-j>` / `<A-k>` | Move line/selection down / up (needs Option-as-Alt, see section 15)    |
+| `<C-a>` / `<C-x>` | Increment / decrement number, bool, date (in tmux press `<C-a>` twice) |
+| `gco` / `gcO`     | Add comment below / above                                              |
+
+## 5. Search and replace
+
+| Key                              | Action                                                     |
+| -------------------------------- | ---------------------------------------------------------- |
+| `/text` / `?text`                | Search forward / backward, then `n` / `N`                  |
+| `*`                              | Search word under cursor                                   |
+| `:%s/old/new/g`                  | Replace in whole file (add `c` at the end to confirm each) |
+| `*` then `cgn`, then `.` `.` `.` | Change next match, repeat for each next match              |
+| `<Space>sr`                      | Search and replace across the project (grug-far)           |
+
+## 6. Finding files and text
+
+| Key              | Action                                       |
+| ---------------- | -------------------------------------------- |
+| `<Space><Space>` | Find files (project root)                    |
+| `<Space>/`       | Grep text in project                         |
+| `<Space>,`       | Open buffers                                 |
+| `<Space>fr`      | Recent files                                 |
+| `<Space>fc`      | Find a Neovim config file                    |
+| `<Space>sw`      | Grep word under cursor (or visual selection) |
+| `<Space>sb`      | Search lines in current file                 |
+| `<Space>sR`      | Resume last picker                           |
+| `<Space>sh`      | Search help pages                            |
+
+**Inside a picker:**
+
+| Key               | Action                              |
+| ----------------- | ----------------------------------- |
+| `<C-j>` / `<C-k>` | Move down / up                      |
+| `Enter`           | Open                                |
+| `<C-v>` / `<C-s>` | Open in vertical / horizontal split |
+| `<C-t>`           | Open in new tab                     |
+| `<Tab>`           | Select multiple                     |
+| `<C-q>`           | Send results to quickfix list       |
+| `<A-h>` / `<A-i>` | Toggle hidden / gitignored files    |
+| `Esc`             | Close                               |
+
+## 7. File explorer (Neo-tree)
+
+| Key                       | Action                              |
+| ------------------------- | ----------------------------------- |
+| `<Space>e`                | Toggle explorer (project root)      |
+| `<Space>E`                | Toggle explorer (current directory) |
+| `<Space>ge` / `<Space>be` | Git status view / open buffers view |
+
+**Inside the tree:**
+
+| Key               | Action                                                     |
+| ----------------- | ---------------------------------------------------------- |
+| `l` / `Enter`     | Open file / expand folder                                  |
+| `h`               | Collapse folder                                            |
+| `<C-Enter>`       | Open file **and close the tree** (custom)                  |
+| `Esc` / `q`       | Close the tree (custom `Esc`)                              |
+| `s` / `S` / `t`   | Open in vertical split / horizontal split / tab            |
+| `a` / `A`         | New file / new folder (end name with `/` to make a folder) |
+| `r` / `d`         | Rename / delete                                            |
+| `c` / `m`         | Copy / move                                                |
+| `y` / `x` / `p`   | Copy / cut / paste files                                   |
+| `Y`               | Copy path to clipboard                                     |
+| `O`               | Open with macOS default app                                |
+| `P`               | Preview file                                               |
+| `H`               | Show hidden files                                          |
+| `/`               | Filter                                                     |
+| `.` / `Backspace` | Make folder the root / go up                               |
+| `?`               | Show all tree keys                                         |
+
+## 8. Buffers (open files, shown as tabs at the top)
+
+| Key               | Action                  |
+| ----------------- | ----------------------- |
+| `<S-h>` / `<S-l>` | Previous / next buffer  |
+| `<Space>bb`       | Toggle to last buffer   |
+| `<Space>bj`       | Pick a buffer by letter |
+| `<Space>bd`       | Close buffer            |
+| `<Space>bo`       | Close all other buffers |
+| `<Space>bp`       | Pin buffer              |
+
+## 9. Splits (windows)
+
+**Create**
+
+| Key                      | Action                                           |
+| ------------------------ | ------------------------------------------------ |
+| `<Space>\|`              | Split right (vertical)                           |
+| `<Space>-`               | Split below (horizontal)                         |
+| `:vsp file` / `:sp file` | Open a file in a new vertical / horizontal split |
+| `<C-v>` / `<C-s>`        | From a picker: open in split                     |
+| `s` / `S`                | From Neo-tree: open in split                     |
+
+**Move between**
+
+| Key                             | Action                               |
+| ------------------------------- | ------------------------------------ |
+| `<C-h>` `<C-j>` `<C-k>` `<C-l>` | Go to left / down / up / right split |
+| `<C-w>w`                        | Cycle through splits                 |
+| `<C-w>p`                        | Go to previous split                 |
+
+**Resize and arrange**
+
+| Key                      | Action                                        |
+| ------------------------ | --------------------------------------------- |
+| `<C-Left>` / `<C-Right>` | Narrower / wider                              |
+| `<C-Up>` / `<C-Down>`    | Taller / shorter                              |
+| `<C-w>=`                 | Make all splits equal                         |
+| `<Space>wm`              | Zoom current split (toggle)                   |
+| `<C-w>x`                 | Swap with next split                          |
+| `<C-w>H` `J` `K` `L`     | Move split to far left / bottom / top / right |
+| `<C-w>T`                 | Move split into its own tab                   |
+
+**Close**
+
+| Key                     | Action                 |
+| ----------------------- | ---------------------- |
+| `<Space>wd` or `<C-w>q` | Close current split    |
+| `<C-w>o`                | Close all other splits |
+
+> `<Space>w` + key is the same as `<C-w>` + key.
+
+**Tabs** (a tab holds a whole split layout): `<Space><Tab><Tab>` new, `<Space><Tab>]` / `[` next / prev, `<Space><Tab>d` close.
+
+## 10. Code (LSP)
+
+| Key                     | Action                                      |
+| ----------------------- | ------------------------------------------- |
+| `gd`                    | Go to definition                            |
+| `gr`                    | References                                  |
+| `gI` / `gy`             | Implementation / type definition            |
+| `gD`                    | (TS) Go to source definition                |
+| `gR`                    | (TS) References to this file                |
+| `K`                     | Hover docs (press again to enter the popup) |
+| `gK` / `<C-k>` (insert) | Signature help                              |
+| `<Space>ca`             | Code action (quick fix)                     |
+| `<Space>cr`             | Rename symbol everywhere                    |
+| `<Space>cR`             | Rename file (updates imports)               |
+| `<Space>cf`             | Format file or selection                    |
+| `<Space>co`             | Organize imports                            |
+| `<Space>cM`             | (TS) Add missing imports                    |
+| `<Space>cD`             | (TS) Fix all diagnostics                    |
+| `<Space>cs`             | Symbols outline                             |
+| `<Space>ss`             | Jump to symbol in file                      |
+| `<Space>cp`             | Markdown preview (in `.md` files)           |
+
+**Completion (insert mode):** `<C-n>` / `<C-p>` move, `Enter` accept, `<C-space>` open menu, `<C-e>` close. Copilot ghost text: `Tab` to accept.
+
+## 11. Diagnostics (errors and warnings)
+
+| Key                       | Action                           |
+| ------------------------- | -------------------------------- |
+| `]d` / `[d`               | Next / previous diagnostic       |
+| `]e` / `[e`               | Next / previous error            |
+| `<Space>cd`               | Show diagnostic for current line |
+| `<Space>xx`               | All diagnostics list (Trouble)   |
+| `<Space>xX`               | Current file diagnostics         |
+| `<Space>xt` / `<Space>st` | TODO / FIXME comments            |
+| `]q` / `[q`               | Next / previous quickfix item    |
+
+## 12. Git
+
+| Key                         | Action                                                     |
+| --------------------------- | ---------------------------------------------------------- |
+| `<Space>gg`                 | **Lazygit** (stage, commit, push, branches, all in one UI) |
+| `]h` / `[h`                 | Next / previous changed hunk                               |
+| `<Space>ghs` / `<Space>ghr` | Stage / reset hunk                                         |
+| `<Space>ghp`                | Preview hunk                                               |
+| `<Space>gb`                 | Blame current line                                         |
+| `<Space>gf`                 | History of current file                                    |
+| `<Space>gs`                 | Git status picker                                          |
+| `<Space>gd`                 | Diff hunks picker                                          |
+| `<Space>gp` / `<Space>gi`   | GitHub PRs / issues                                        |
+
+## 13. Terminal
+
+| Key          | Action                                                   |
+| ------------ | -------------------------------------------------------- |
+| `<C-/>`      | Toggle floating terminal (works inside the terminal too) |
+| `<Space>ft`  | Terminal at project root                                 |
+| `<C-\><C-n>` | Leave terminal insert mode (to scroll/copy)              |
+
+## 14. AI (Copilot)
+
+| Key                           | Action                                        |
+| ----------------------------- | --------------------------------------------- |
+| `Tab` (insert)                | Accept Copilot suggestion                     |
+| `<Space>aa`                   | Toggle Copilot Chat                           |
+| `<Space>aq`                   | Quick question about current buffer           |
+| `<Space>ap`                   | Prompt actions (explain, fix, tests, docs...) |
+| Select code, then `<Space>aa` | Chat about the selection                      |
+| `<C-s>` (in chat)             | Send prompt                                   |
+
+## 15. Toggles (`<Space>u`)
+
+| Key                       | Toggle                             |
+| ------------------------- | ---------------------------------- |
+| `<Space>uw`               | Line wrap                          |
+| `<Space>us`               | Spell check                        |
+| `<Space>ul` / `<Space>uL` | Line numbers / relative numbers    |
+| `<Space>uh`               | Inlay type hints                   |
+| `<Space>uf`               | Format on save                     |
+| `<Space>ud`               | Diagnostics                        |
+| `<Space>uz`               | Zen mode (distraction-free)        |
+| `<Space>uC`               | Try colorschemes with live preview |
+
+> **Alt/Option keys on macOS:** `<A-j>`, `<A-k>`, `<A-h>`, `<A-i>` only work if Ghostty sends Option as Alt. Add `macos-option-as-alt = true` to `ghostty/config` to enable them.
+
+## 16. Sessions, scratch and history
+
+| Key         | Action                                             |
+| ----------- | -------------------------------------------------- |
+| `<Space>qs` | Restore last session for this folder               |
+| `<Space>qS` | Pick a session                                     |
+| `<Space>.`  | Scratch buffer (quick notes, not saved to project) |
+| `<Space>n`  | Notification history                               |
+| `<Space>:`  | Command history                                    |
+
+## 17. Productivity techniques
+
+**Macros:** record once, replay many times.
+`qa` start recording into `a` → do the edit → `q` stop → `@a` replay → `@@` replay again → `10@a` replay 10 times.
+
+**Edit many lines at once (visual block):**
+`<C-v>` → select down with `j` → `I` → type → `Esc`. Text is inserted on every line. Use `A` to append at the end instead (`$A` for ragged lines).
+
+**Run a command on matching lines:**
+`:g/console.log/d` deletes every line containing `console.log`.
+`:g/TODO/normal A !` appends ` !` to every line with TODO.
+
+**Project-wide replace (the Vim way):**
+`<Space>/` grep → `<C-q>` send to quickfix → `:cdo s/old/new/g | update`.
+
+**Change surrounding quotes/brackets fast:** `ci"`, `ci(`, `cit` work from anywhere inside them, not only on the character.
+
+**Repeat smarter:** make the edit once, then `n` + `.` to apply it to the next match.
+
+**Registers:** `"ayy` copy line into register `a`, `"ap` paste it. `"+y` copies to the macOS clipboard (already the default here). `<Space>s"` shows all registers.
+
+**Increment a column of numbers:** select lines with `V`, then `g<C-a>` makes them 1, 2, 3...
+
+## 18. tmux (prefix is `<C-a>`)
+
+| Key                       | Action                                            |
+| ------------------------- | ------------------------------------------------- |
+| `<C-a> \|` / `<C-a> -`    | Split pane right / below                          |
+| `<C-a> h j k l`           | Move between panes                                |
+| `<C-h> <C-j> <C-k> <C-l>` | Move between panes (no prefix) when not in Neovim |
+| `<C-a> H J K L`           | Resize pane (repeatable)                          |
+| `<C-a> z`                 | Zoom pane                                         |
+| `<C-a> x` / `<C-a> X`     | Kill pane / window                                |
+| `<C-a> c`                 | New window                                        |
+| `<C-a> Space`             | Last window                                       |
+| `<C-a> [`                 | Copy mode (`v` select, `y` copy)                  |
+| `<C-a> r`                 | Reload tmux config                                |
+
+> Inside Neovim, `<C-h/j/k/l>` only moves between **Neovim** splits. To jump from Neovim to a tmux pane use `<C-a> h/j/k/l`. (Seamless movement needs the `vim-tmux-navigator` Neovim plugin, which isn't installed.)
+
+## 19. Maintenance
+
+| Command                  | What it does                                             |
+| ------------------------ | -------------------------------------------------------- |
+| `:Lazy`                  | Plugin manager (`U` update, `S` sync, `X` clean)         |
+| `:Lazy restore`          | Reinstall exact versions from `lazy-lock.json`           |
+| `:LazyExtras`            | Enable/disable language packs and features (`x` toggles) |
+| `:Mason`                 | Install language servers, formatters, linters            |
+| `:checkhealth`           | Diagnose problems                                        |
+| `:LspInfo` / `<Space>cl` | Which language servers are attached                      |
+| `:messages`              | Show recent errors and messages                          |
+| `:Tutor`                 | Interactive Vim tutorial                                 |

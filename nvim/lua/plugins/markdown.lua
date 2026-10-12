@@ -4,7 +4,7 @@ return {
     opts = {
       linters = {
         ["markdownlint-cli2"] = {
-          args = { "--config", vim.fn.expand("~/.markdownlint.jsonc"), "-" },
+          args = { "--config", vim.fn.stdpath("config") .. "/.markdownlint.jsonc", "-" },
         },
       },
     },

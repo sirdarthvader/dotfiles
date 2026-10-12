@@ -19,13 +19,21 @@ if [ "$OS" = "Darwin" ]; then
   fi
 
   echo "📦 Installing CLI tools..."
-  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node
+  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli
+  brew install --cask font-caskaydia-cove-nerd-font
 
 elif [ "$OS" = "Linux" ]; then
   echo "📦 Installing CLI tools..."
   # Adjust for your distro — this is for Ubuntu/Debian
   sudo apt update
-  sudo apt install -y neovim tmux fzf fd-find ripgrep zoxide nodejs npm
+  sudo apt install -y tmux fzf fd-find ripgrep zoxide nodejs npm build-essential unzip
+
+  # Neovim from the official release: apt's version is too old for LazyVim (needs >= 0.11.2)
+  curl -Lo nvim.tar.gz https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.tar.gz
+  sudo rm -rf /opt/nvim-linux-x86_64
+  sudo tar -C /opt -xzf nvim.tar.gz
+  sudo ln -sf /opt/nvim-linux-x86_64/bin/nvim /usr/local/bin/nvim
+  rm nvim.tar.gz
 
   # lazygit (not in default repos)
   LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
@@ -35,6 +43,7 @@ elif [ "$OS" = "Linux" ]; then
   rm lazygit lazygit.tar.gz
 
   echo "⚠️  yazi may need manual install on Linux — check https://yazi-rs.github.io/docs/installation"
+  echo "⚠️  Install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads for icons"
 fi
 
 # ── Get the directory this script lives in ────────────────
@@ -95,7 +104,6 @@ echo "Next steps:"
 echo "  1. Restart your terminal (or run: source ~/.zshrc)"
 echo "  2. Open nvim — plugins will auto-install on first launch"
 echo "  3. Run :Copilot auth inside Neovim to sign in to GitHub Copilot"
-echo "  4. Run :MasonInstall prettier inside Neovim for formatting"
-echo "  5. Run 'claude auth' in terminal to sign in to Claude Code"
-echo "  6. Start tmux with: tmux new-session -s work"
+echo "  4. Run 'claude auth' in terminal to sign in to Claude Code"
+echo "  5. Start tmux with: tmux new-session -s work"
 echo ""

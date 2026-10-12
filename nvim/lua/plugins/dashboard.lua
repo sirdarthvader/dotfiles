@@ -9,6 +9,12 @@ math.randomseed((vim.uv or vim.loop).hrtime())
 local header = headers[math.random(#headers)]
 local quote = quotes[math.random(#quotes)]
 
+local WIDTH, PANE_GAP = 55, 20
+
+-- The dashboard only appears for `nvim` or `nvim <dir>`; don't advance the art carousel otherwise.
+local argc = vim.fn.argc(-1)
+local shows_dashboard = argc == 0 or (argc == 1 and vim.fn.isdirectory(vim.fn.argv(0)) == 1)
+
 -- Strip leading/trailing blank lines so arts don't add stray vertical gaps.
 local function trim_vertical(s)
   local lines = {}
@@ -81,7 +87,7 @@ end
 
 local function pick_art(arts)
   local max_h = vim.o.lines - 4 -- leave room for cmdline/status + breathing space
-  local max_w = vim.o.columns - 55 - 20 -- window minus left pane width + pane_gap
+  local max_w = vim.o.columns - WIDTH - PANE_GAP
 
   -- Trim + measure every art once; collect the indices that fit the window.
   local trimmed, fit_idx = {}, {}
@@ -126,15 +132,41 @@ local function pick_art(arts)
   return trimmed[chosen]
 end
 
-local art = pick_art(ascii_art)
+local art = shows_dashboard and pick_art(ascii_art) or ""
 
 return {
   {
     "snacks.nvim",
+    -- Snacks skips the dashboard for `nvim <dir>`, so show it ourselves in that case.
+    init = function()
+      vim.api.nvim_create_autocmd("VimEnter", {
+        group = vim.api.nvim_create_augroup("dashboard_on_dir_start", { clear = true }),
+        once = true,
+        callback = function()
+          if vim.fn.argc(-1) ~= 1 then
+            return
+          end
+          local arg = vim.fn.argv(0)
+          if arg == "" or vim.fn.isdirectory(arg) ~= 1 then
+            return
+          end
+
+          vim.cmd.cd(arg)
+
+          -- Use the real window, not a float, so neo-tree (<leader>e) isn't hidden behind it.
+          local win = vim.api.nvim_get_current_win()
+          local dir_buf = vim.api.nvim_get_current_buf()
+          local buf = vim.api.nvim_create_buf(false, true)
+          vim.api.nvim_win_set_buf(win, buf)
+          require("snacks").dashboard.open({ win = win, buf = buf })
+          pcall(vim.api.nvim_buf_delete, dir_buf, { force = true })
+        end,
+      })
+    end,
     opts = {
       dashboard = {
-        width = 55,
-        pane_gap = 20,
+        width = WIDTH,
+        pane_gap = PANE_GAP,
         preset = {
           header = header,
           -- Customize the options list rendered by `section = "keys"`.

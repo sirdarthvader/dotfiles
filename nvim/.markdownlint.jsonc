@@ -1,0 +1,8 @@
+{
+  // Disable line length rule - too noisy for regular editing
+  "MD013": false,
+  // Disable table column style alignment rule
+  "MD060": false,
+  // Disable blanks around headings rule
+  "MD022": false
+}
