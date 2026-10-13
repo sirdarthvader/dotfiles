@@ -261,7 +261,7 @@ boom() {
 
 # Project navigation
 alias cdfm='cd /Users/ashish.singh/Documents/EventCloud/framework-monorepo'
-alias cddf='cd /Users/ashish.singh/Documents/development-framework'
+alias cddf='cd /Users/ashish.singh/Documents/code-dump/development-framework'
 alias cdtest='cd /Users/ashish.singh/Documents/cdf-test-planner-app'
 
 # ZSHRC edit and reload
