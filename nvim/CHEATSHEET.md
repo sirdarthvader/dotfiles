@@ -4,6 +4,56 @@
 
 > Lost? Press `<Space>` and wait: a popup lists every shortcut. `<Space>sk` searches all keymaps.
 
+## Start here: the essentials
+
+Learn sections A–D first; the rest of this file can wait. `<C-a>` is the tmux key: press it, let go, then press the next key.
+
+**A. Start your day**
+
+| Do this                        | Keys                          |
+| ------------------------------ | ----------------------------- |
+| Open a project                 | `t` in a shell, or `<C-a> f`  |
+| Switch to another open project | `<C-a> s`                     |
+| Go to window 1 code / 2 run / 3 shell | `<C-a> 1` / `2` / `3`  |
+
+**B. Write code**
+
+| Do this                        | Keys                          |
+| ------------------------------ | ----------------------------- |
+| Find a file                    | `<Space><Space>`              |
+| Search text across the project | `<Space>/`                    |
+| File tree                      | `<Space>e`                    |
+| Run a quick command            | `` Ctrl+` `` (same key hides it) |
+
+**C. Ask Claude (replaces Copilot Chat)**
+
+| Do this                               | Keys                           |
+| ------------------------------------- | ------------------------------ |
+| Open or hide Claude next to your code | `<Space>aa`                    |
+| Move between your code and Claude     | `<C-h>` / `<C-l>`              |
+| Give it the selected lines            | select, then `<Space>av`       |
+| Give it the whole file                | `<Space>af`                    |
+| Give it a folder                      | in the file tree, `<Space>ac`  |
+| Paste a screenshot                    | `<C-v>` inside Claude          |
+| Attach any file while typing          | type `@` in Claude             |
+
+**D. When Claude edits your code**
+
+| Do this                        | Keys                          |
+| ------------------------------ | ----------------------------- |
+| Accept / reject its change     | `<Space>ay` / `<Space>an`     |
+| Review everything that changed | `<Space>gv` (again to close)  |
+| Commit                         | `<Space>gg` (lazygit)         |
+
+**E. Later, when you're comfortable**
+
+| Situation                             | Keys                                   |
+| ------------------------------------- | -------------------------------------- |
+| Big task, give Claude the full screen | `<Space>aw` (again to put it back)     |
+| Second task in parallel               | `wt my-task` in a shell                |
+| Reading a markdown doc                | just open it; it renders by itself     |
+| Starting a fresh Claude task          | `/clear` in Claude (watch `ctx %` at the bottom) |
+
 ## 0. Daily workflow
 
 1. Open Ghostty: you land in tmux automatically (your last session, or a new one called `main`).
