@@ -6,7 +6,8 @@ dir=$(jq -r '.workspace.current_dir // .cwd // empty' <<<"$input")
 pct=$(jq -r '.context_window.used_percentage // 0 | floor' <<<"$input")
 
 branch=$(git -C "$dir" branch --show-current 2>/dev/null)
-dirty=$([[ -n $(git -C "$dir" status --porcelain 2>/dev/null | head -1) ]] && echo "*")
+# --no-optional-locks: don't take .git/index.lock (it would block your own git commands)
+dirty=$([[ -n $(git --no-optional-locks -C "$dir" status --porcelain 2>/dev/null | head -1) ]] && echo "*")
 
 # Tokyo Night: blue, purple, green/yellow/red, dim
 blue=$'\e[38;2;122;162;247m' purple=$'\e[38;2;187;154;247m' dim=$'\e[38;2;86;95;137m' reset=$'\e[0m'
