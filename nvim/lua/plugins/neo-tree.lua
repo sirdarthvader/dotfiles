@@ -59,8 +59,8 @@ return {
 
         filtered_items = {
           visible = false,
-          hide_dotfiles = true,
-          hide_gitignored = true,
+          hide_dotfiles = false,
+          hide_gitignored = false,
           hide_by_name = { ".DS_Store", "node_modules", "dist", "build", ".next", ".turbo" },
           hide_by_pattern = { "**/__*" },
           always_show = { ".copilot*", ".claude*", ".env", ".env.local", ".env.production", ".gitignore" },

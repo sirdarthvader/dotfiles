@@ -19,7 +19,7 @@ if [ "$OS" = "Darwin" ]; then
   fi
 
   echo "📦 Installing CLI tools..."
-  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise
+  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise imagemagick
   brew install --cask font-caskaydia-cove-nerd-font
 
 elif [ "$OS" = "Linux" ]; then
@@ -101,6 +101,11 @@ fi
 if ! command -v claude &> /dev/null; then
   echo "📦 Installing Claude Code CLI..."
   npm install -g @anthropic-ai/claude-code
+fi
+
+# Mermaid diagrams rendered inline in nvim markdown (snacks.image)
+if ! command -v mmdc &> /dev/null; then
+  npm install -g @mermaid-js/mermaid-cli
 fi
 
 # ── Done! ─────────────────────────────────────────────────

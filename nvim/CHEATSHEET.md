@@ -12,6 +12,7 @@
    - `2 run`: `pnpm dev`, `pnpm jest --watch`, builds
    - `3 shell`: one-off commands (`pnpm i`, `pc`, `gcnb`...)
 3. Code in nvim. Check the server or tests with `<C-a> 2`, and come back with `<C-a> Space`.
+   - Need AI? `<Space>aa` opens Claude on the right. Select code + `<Space>av` to hand it over, `<C-.>` to type, `<C-h>` back. Hide it with `<Space>aa` again (see section 14).
 4. Commit: `<Space>gg` in nvim (or `<C-a> g` from any window) opens lazygit; `q` returns.
 5. Another repo: `<C-a> f` again. `<C-a> S` toggles between the last two projects.
 6. End of day: just close Ghostty. Everything keeps running. tmux saves the layout every 15 min, so it also survives a reboot (then press `<Space>qs` in nvim to reopen your files).
@@ -227,7 +228,10 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `<Space>cD`             | (TS) Fix all diagnostics                    |
 | `<Space>cs`             | Symbols outline                             |
 | `<Space>ss`             | Jump to symbol in file                      |
-| `<Space>cp`             | Markdown preview (in `.md` files)           |
+| `<Space>cp`             | Markdown preview in the browser (in `.md` files) |
+| `<Space>um`             | Toggle in-editor markdown rendering         |
+
+**Reading markdown in nvim:** `.md` files render in place: headings, tables, checkboxes, callouts, code blocks, and (in Ghostty) images and ```` ```mermaid ```` diagrams drawn inline. The line under the cursor shows raw text, and insert mode shows it all raw for editing. For long docs: `<Space>uz` zen mode, `<Space>us` to hide spell-check squiggles.
 
 **Completion (insert mode):** `<C-n>` / `<C-p>` move, `Enter` accept, `<C-space>` open menu, `<C-e>` close. Copilot ghost text: `Tab` to accept.
 
@@ -265,16 +269,32 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `<Space>ft`  | Terminal at project root                                 |
 | `<C-\><C-n>` | Leave terminal insert mode (to scroll/copy)              |
 
-## 14. AI (Copilot)
+## 14. AI (Claude / Copilot CLI)
 
-| Key                           | Action                                        |
-| ----------------------------- | --------------------------------------------- |
-| `Tab` (insert)                | Accept Copilot suggestion                     |
-| `<Space>aa`                   | Toggle Copilot Chat                           |
-| `<Space>aq`                   | Quick question about current buffer           |
-| `<Space>ap`                   | Prompt actions (explain, fix, tests, docs...) |
-| Select code, then `<Space>aa` | Chat about the selection                      |
-| `<C-s>` (in chat)             | Send prompt                                   |
+The agent runs in a tmux pane on the right of the current window (one per window). Hiding it keeps the conversation running.
+
+| Key                                | Action                                                        |
+| ---------------------------------- | ------------------------------------------------------------- |
+| `<Space>aa` / `<C-a> a`            | Toggle the AI pane (opens `claude --ide` the first time)      |
+| `<Space>aA` / `<C-a> A`            | Pick tool: claude / copilot, new / continue / resume           |
+| `<C-.>`                            | Jump to the AI pane (`<C-h>` back to nvim)                    |
+| `<Space>aw` / `<C-a> W`            | Move the AI pane to its own `ai` window, and back (same conversation) |
+| `<Space>af`                        | Send current file (`@path`)                                   |
+| `<Space>at`                        | Send cursor position (`@path#L42`), or selection in visual    |
+| `<Space>av` (visual)               | Send selection                                                |
+| `<Space>ap`                        | Pick a prompt: explain, fix, tests, review, diagnostics...    |
+| `<Space>ac` (neo-tree / explorer)  | Attach file or folder under cursor to Claude (`Tab` marks several in the explorer) |
+| `<A-a>` (in any picker)            | Send the picked / `Tab`-marked files to the AI pane           |
+| `<Space>as`                        | Choose which running AI session sends go to                   |
+| `<Space>ay` / `<Space>an`          | Accept / reject Claude's proposed diff (or `:w` / `:q`)       |
+| `Tab` (insert)                     | Accept Copilot inline suggestion                              |
+| `Tab` (normal)                     | Jump to / apply Copilot next-edit suggestion (`<Space>uN` toggles) |
+
+- Claude opened with `<Space>aa` is pinned to *this* nvim: it sees your open file, live selection and LSP diagnostics, and shows edits as diffs in nvim. Opened any other way (`<C-a> a` from a shell pane, or nvim restarted since), it falls back to `--ide`, which gives up when VS Code or a second nvim has the same repo open; type `/ide` in Claude and pick Neovim.
+- Inside the Claude prompt: `@` fuzzy-attaches any file or folder, `Ctrl+V` pastes a screenshot from the clipboard (`Cmd+Ctrl+Shift+4` to grab one), dragging an image file onto the pane attaches it, `!` runs a shell command into context.
+- Next-edit suggestions: make a change (e.g. rename a variable), leave insert mode, pause. A diff appears where the follow-up edit belongs; `Tab` jumps there, `Tab` again applies. Uses the same Copilot login as ghost text, nothing to install.
+- Status bar: `●` = AI needs input, `✓` = AI finished, on that window's tab. Other projects show as `● name` bottom-right. A macOS notification fires when Ghostty isn't in front. (Copilot CLI only beeps + macOS notification, no `●`/`✓`.)
+- Hidden AI panes live in a session called `_ai`; ignore it in `<C-a> s`.
 
 ## 15. Toggles (`<Space>u`)
 
@@ -337,6 +357,7 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | `<C-a> Space`             | Last window                                             |
 | `<C-a> c` / `<C-a> ,`     | New window / rename window                              |
 | `<C-a> g`                 | Lazygit popup                                           |
+| `<C-a> a` / `<C-a> A`     | Toggle AI pane / pick AI tool (see section 14)          |
 | `<C-a> \|` / `<C-a> -`    | Split pane right / below                                |
 | `<C-h> <C-j> <C-k> <C-l>` | Move between panes and nvim splits (no prefix)          |
 | `<C-a> H J K L`           | Resize pane (repeatable)                                |
