@@ -259,6 +259,9 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `<Space>gf`                 | History of current file                                    |
 | `<Space>gs`                 | Git status picker                                          |
 | `<Space>gd`                 | Diff hunks picker                                          |
+| `<Space>gv`                 | **Review all changes** side by side (diffview; again or `q` closes) — use after Claude edits |
+| `<Space>gm`                 | Review this branch vs main (what the PR will contain)      |
+| `<Space>gV`                 | Current file's history, commit by commit                   |
 | `<Space>gp` / `<Space>gi`   | GitHub PRs / issues                                        |
 
 ## 13. Terminal
@@ -294,7 +297,11 @@ The agent runs in a tmux pane on the right of the current window (one per window
 - Inside the Claude prompt: `@` fuzzy-attaches any file or folder, `Ctrl+V` pastes a screenshot from the clipboard (`Cmd+Ctrl+Shift+4` to grab one), dragging an image file onto the pane attaches it, `!` runs a shell command into context.
 - Next-edit suggestions: make a change (e.g. rename a variable), leave insert mode, pause. A diff appears where the follow-up edit belongs; `Tab` jumps there, `Tab` again applies. Uses the same Copilot login as ghost text, nothing to install.
 - Status bar: `●` = AI needs input, `✓` = AI finished, on that window's tab. Other projects show as `● name` bottom-right. A macOS notification fires when Ghostty isn't in front. (Copilot CLI only beeps + macOS notification, no `●`/`✓`.)
-- Hidden AI panes live in a session called `_ai`; ignore it in `<C-a> s`.
+- Hidden AI panes live in a session called `_ai` (scratch popups in `_popup_*`); ignore them in `<C-a> s`.
+- Status line under Claude's prompt: model │ folder  branch (`*` = uncommitted) │ `ctx N%` — green, yellow from 50%, red from 80% (time to `/compact` or `/clear`).
+- Claude runs tests, lint, type checks, builds and read-only git/gh commands without asking (allowlist in `claude/settings.json`). It is **blocked** from force-push, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .` and `stash drop|clear`; normal `git push` still asks.
+- Jira / GitHub: run `/mcp` once in Claude and log in to both, then e.g. "implement PROJ-123, then open a PR".
+- Parallel agents: `wt <name>` per task (shell section), one Claude in each session; `<C-a> s` to hop between them.
 
 ## 15. Toggles (`<Space>u`)
 
@@ -357,7 +364,9 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | `<C-a> Space`             | Last window                                             |
 | `<C-a> c` / `<C-a> ,`     | New window / rename window                              |
 | `<C-a> g`                 | Lazygit popup                                           |
+| `<C-a> t` / `` Ctrl+` ``  | Scratch shell popup for this project (stays alive; same key hides it) |
 | `<C-a> a` / `<C-a> A`     | Toggle AI pane / pick AI tool (see section 14)          |
+| `<C-a> W`                 | AI pane ↔ its own window                                |
 | `<C-a> \|` / `<C-a> -`    | Split pane right / below                                |
 | `<C-h> <C-j> <C-k> <C-l>` | Move between panes and nvim splits (no prefix)          |
 | `<C-a> H J K L`           | Resize pane (repeatable)                                |
@@ -396,6 +405,7 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | Command        | Action                                                         |
 | -------------- | -------------------------------------------------------------- |
 | `t` / `t .`    | Pick a project / use the current dir → tmux session (code/run/shell) |
+| `wt <name>`    | Parallel task: fresh worktree off main + its own session `<repo>@<name>` (`.env` copied, `pnpm install` in run). Open Claude there with `<Space>aa` |
 | `tls`          | List tmux sessions                                             |
 | `lg`           | Lazygit                                                        |
 | `z <name>`     | Jump to a frequently used directory (zoxide)                   |
@@ -443,6 +453,7 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | New window      | Opens straight into tmux (attaches the last session)                  |
 | Left Option     | Sends Alt (`<A-c>`, `<A-j>`...); right Option still types special characters |
 | `<Cmd-S-,>`     | Reload `ghostty/config`                                               |
+| `` Ctrl+` ``    | Scratch shell popup (sends `<C-a> t` to tmux)                         |
 | `<Cmd-+>` / `<Cmd-->` / `<Cmd-0>` | Font bigger / smaller / reset                       |
 
 Theme is **TokyoNight Night** everywhere: Ghostty, tmux, nvim, bat and delta (git diffs).

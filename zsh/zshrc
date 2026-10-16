@@ -142,6 +142,26 @@ alias tls='tmux ls'
 # t: fuzzy-pick a project -> tmux session (t . = current dir)
 alias t='~/.config/tmux/sessionizer.sh'
 
+# wt <name>: parallel task in a fresh git worktree (<repo>/.claude/worktrees/<name>, branch
+# worktree-<name>, off origin's default branch; same layout as `claude -w <name>`), opened as
+# its own tmux session "<repo>@<name>" with .env files copied and `pnpm install` running in "run".
+# Remove when done: git worktree remove .claude/worktrees/<name> && git branch -D worktree-<name>
+wt() {
+  [[ -n $1 ]] || { echo "usage: wt <name>"; return 1; }
+  local common root dir base install=""
+  common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || { echo "wt: not in a git repo"; return 1; }
+  root=${common%/.git}
+  dir="$root/.claude/worktrees/$1"
+  if [[ ! -d $dir ]]; then
+    git -C "$root" fetch -q origin 2>/dev/null
+    base=$(git -C "$root" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo HEAD)
+    git -C "$root" worktree add --no-track -b "worktree-$1" "$dir" "$base" || return
+    for f in "$root"/.env*(N); do cp "$f" "$dir/"; done
+    [[ -f $dir/pnpm-lock.yaml ]] && install="pnpm install"
+  fi
+  ~/.config/tmux/sessionizer.sh "$dir" "$install"
+}
+
 
 
 # Custom Alias

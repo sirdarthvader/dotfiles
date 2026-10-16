@@ -19,7 +19,7 @@ if [ "$OS" = "Darwin" ]; then
   fi
 
   echo "📦 Installing CLI tools..."
-  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise imagemagick
+  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise imagemagick jq
   brew install --cask font-caskaydia-cove-nerd-font
 
 elif [ "$OS" = "Linux" ]; then
@@ -108,6 +108,27 @@ if ! command -v mmdc &> /dev/null; then
   npm install -g @mermaid-js/mermaid-cli
 fi
 
+# Claude Code: link hook + status line scripts, then merge claude/settings.json (status line,
+# git guardrail, tmux notify hook, permission allowlist) into ~/.claude/settings.json without
+# touching anything else in it. Safe to re-run.
+mkdir -p ~/.claude
+backup_if_real ~/.claude/hooks
+ln -sfn "$DOTFILES_DIR/claude/hooks" ~/.claude/hooks
+ln -sfn "$DOTFILES_DIR/claude/statusline.sh" ~/.claude/statusline.sh
+[ -f ~/.claude/settings.json ] || echo '{}' > ~/.claude/settings.json
+cp ~/.claude/settings.json ~/.claude/settings.json.backup
+jq -s '.[0] as $add | .[1]
+  | .statusLine = $add.statusLine
+  | .permissions.allow = (((.permissions.allow // []) + $add.permissions.allow) | unique)
+  | reduce ($add.hooks | to_entries[]) as $e (.; .hooks[$e.key] = (((.hooks[$e.key] // []) + $e.value) | unique))' \
+  "$DOTFILES_DIR/claude/settings.json" ~/.claude/settings.json > ~/.claude/settings.json.tmp &&
+  mv ~/.claude/settings.json.tmp ~/.claude/settings.json
+echo "   ✓ Claude Code hooks, status line and permissions merged"
+
+# Ignore Claude/wt worktrees (<repo>/.claude/worktrees) in every repo
+mkdir -p ~/.config/git
+grep -qxF '**/.claude/worktrees/' ~/.config/git/ignore 2>/dev/null || echo '**/.claude/worktrees/' >> ~/.config/git/ignore
+
 # ── Done! ─────────────────────────────────────────────────
 echo ""
 echo "✅ Setup complete!"
@@ -116,6 +137,6 @@ echo "Next steps:"
 echo "  1. Restart your terminal (or run: source ~/.zshrc)"
 echo "  2. Open nvim — plugins will auto-install on first launch"
 echo "  3. Run :Copilot auth inside Neovim to sign in to GitHub Copilot"
-echo "  4. Run 'claude auth' in terminal to sign in to Claude Code"
+echo "  4. Run 'claude auth login' in terminal to sign in to Claude Code, then /mcp inside Claude to connect Jira + GitHub"
 echo "  5. Open Ghostty (auto-attaches tmux), then prefix + I to install tmux plugins; use 't' or prefix + f to open a project"
 echo ""

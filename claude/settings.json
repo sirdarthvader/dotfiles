@@ -1,0 +1,67 @@
+{
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.sh",
+    "padding": 0
+  },
+  "permissions": {
+    "allow": [
+      "Bash(gh issue view *)",
+      "Bash(gh pr checks *)",
+      "Bash(gh pr diff *)",
+      "Bash(gh pr list *)",
+      "Bash(gh pr view *)",
+      "Bash(gh run list *)",
+      "Bash(gh run view *)",
+      "Bash(git blame *)",
+      "Bash(git diff *)",
+      "Bash(git fetch *)",
+      "Bash(git log *)",
+      "Bash(git show *)",
+      "Bash(pnpm build *)",
+      "Bash(pnpm exec eslint *)",
+      "Bash(pnpm exec jest *)",
+      "Bash(pnpm exec tsc *)",
+      "Bash(pnpm jest *)",
+      "Bash(pnpm lint *)",
+      "Bash(pnpm nx build *)",
+      "Bash(pnpm nx lint *)",
+      "Bash(pnpm nx test *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm tsc *)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/hooks/block-dangerous-git.sh"
+          }
+        ]
+      }
+    ],
+    "Notification": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/ai-notify.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/ai-notify.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
