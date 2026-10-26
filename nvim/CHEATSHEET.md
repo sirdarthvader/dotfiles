@@ -202,7 +202,7 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `Y`               | Copy path to clipboard                                     |
 | `O`               | Open with macOS default app                                |
 | `P`               | Preview file                                               |
-| `H`               | Show hidden + gitignored files (`.env*` always shows)      |
+| `H`               | Hide / show dimmed items (gitignored, `node_modules` …)    |
 | `/`               | Filter (to find things, `<Space><Space>` / `<Space>fd`)    |
 | `.` / `Backspace` | Make folder the root / go up                               |
 | `?`               | Show all tree keys                                         |

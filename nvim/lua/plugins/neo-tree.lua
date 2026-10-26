@@ -58,11 +58,13 @@ return {
         },
 
         filtered_items = {
-          visible = false,
+          -- Show hidden/gitignored items dimmed so you can see they exist; `H` hides them.
+          -- This also makes the tree's `/` search include gitignored files, so find_args below excludes build output.
+          visible = true,
           hide_dotfiles = false,
-          -- Also keeps the tree's `/` search off build output; `H` shows them, always_show still wins.
           hide_gitignored = true,
-          hide_by_name = { ".DS_Store", "node_modules", "dist", "build", ".next", ".turbo" },
+          hide_by_name = { "node_modules", "dist", "build", ".next", ".turbo" },
+          never_show = { ".DS_Store" },
           hide_by_pattern = { "**/__*" },
           always_show = { ".copilot*", ".claude*", ".env", ".env.local", ".env.production", ".gitignore" },
           always_show_by_pattern = { ".env*", "*.config.*" },
@@ -85,6 +87,14 @@ return {
             ".turbo",
             "--exclude",
             ".cache",
+            "--exclude",
+            ".nx",
+            "--exclude",
+            "target",
+            "--exclude",
+            "cdk.out",
+            "--exclude",
+            "coverage",
             "--exclude",
             "__*",
           },
