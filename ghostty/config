@@ -21,12 +21,17 @@ macos-option-as-alt = left
 
 # Window
 macos-titlebar-style = transparent
-background-opacity = 0.95
-background-blur = macos-glass-regular
+# Opaque, no blur: the macOS glass blur hides background-image (below)
+background-opacity = 1
 window-save-state = always
 maximize = true
 confirm-close-surface = false
 quick-terminal-position = center
+
+# Background image, shuffled from ~/Wallpapers by shuffle-bg.sh into wallpaper.conf (gitignored)
+background-image-fit = cover
+background-image-opacity = 0.08
+config-file = ?wallpaper.conf
 
 # Padding (left, right, top, bottom → x/y in Ghostty)
 window-padding-x = 4,0
@@ -38,3 +43,7 @@ keybind = shift+enter=text:\x1b[13;2u
 
 # Ctrl+` toggles a scratch terminal popup, like VS Code (sends tmux prefix C-a + t; see tmux/popup.sh)
 keybind = ctrl+backquote=text:\x01t
+
+# Cmd+Shift+B: show the queued background image, then queue the next one (sends tmux prefix C-a + B)
+keybind = cmd+shift+b=reload_config
+keybind = chain=text:\x01B

@@ -60,7 +60,8 @@ return {
         filtered_items = {
           visible = false,
           hide_dotfiles = false,
-          hide_gitignored = false,
+          -- Also keeps the tree's `/` search off build output; `H` shows them, always_show still wins.
+          hide_gitignored = true,
           hide_by_name = { ".DS_Store", "node_modules", "dist", "build", ".next", ".turbo" },
           hide_by_pattern = { "**/__*" },
           always_show = { ".copilot*", ".claude*", ".env", ".env.local", ".env.production", ".gitignore" },

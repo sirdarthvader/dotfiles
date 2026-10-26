@@ -150,17 +150,20 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 
 ## 6. Finding files and text
 
-| Key              | Action                                       |
-| ---------------- | -------------------------------------------- |
-| `<Space><Space>` | Find files (project root)                    |
-| `<Space>/`       | Grep text in project                         |
-| `<Space>,`       | Open buffers                                 |
-| `<Space>fr`      | Recent files                                 |
-| `<Space>fc`      | Find a Neovim config file                    |
-| `<Space>sw`      | Grep word under cursor (or visual selection) |
-| `<Space>sb`      | Search lines in current file                 |
-| `<Space>sR`      | Resume last picker                           |
-| `<Space>sh`      | Search help pages                            |
+| Key              | Action                                                                                          |
+| ---------------- | ----------------------------------------------------------------------------------------------- |
+| `<Space><Space>` | Find files (git/monorepo root, incl. dotfiles)                                                  |
+| `<Space>fP`      | Find files in the current package (nearest `package.json`)                                      |
+| `<Space>fi`      | Find files incl. gitignored ones (`.env.local`); still skips `node_modules`/`dist`/build output |
+| `<Space>fd`      | Find a folder, reveal it in Neo-tree                                                            |
+| `<Space>/`       | Grep text in project                                                                            |
+| `<Space>,`       | Open buffers                                                                                    |
+| `<Space>fr`      | Recent files                                                                                    |
+| `<Space>fc`      | Find a Neovim config file                                                                       |
+| `<Space>sw`      | Grep word under cursor (or visual selection)                                                    |
+| `<Space>sb`      | Search lines in current file                                                                    |
+| `<Space>sR`      | Resume last picker                                                                              |
+| `<Space>sh`      | Search help pages                                                                               |
 
 **Inside a picker:**
 
@@ -199,8 +202,8 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 | `Y`               | Copy path to clipboard                                     |
 | `O`               | Open with macOS default app                                |
 | `P`               | Preview file                                               |
-| `H`               | Show hidden files                                          |
-| `/`               | Filter                                                     |
+| `H`               | Show hidden + gitignored files (`.env*` always shows)      |
+| `/`               | Filter (to find things, `<Space><Space>` / `<Space>fd`)    |
 | `.` / `Backspace` | Make folder the root / go up                               |
 | `?`               | Show all tree keys                                         |
 
