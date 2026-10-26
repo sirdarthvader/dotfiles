@@ -288,6 +288,18 @@ Examples: `ciw` change word, `di"` delete inside quotes, `yaf` copy whole functi
 
 **Completion (insert mode):** `<C-n>` / `<C-p>` move, `Enter` accept, `<C-space>` open menu, `<C-e>` close. Copilot ghost text: `Tab` to accept.
 
+**Java (jdtls):** the first open of a project takes a minute while it imports Maven/Gradle. jdtls runs on JDK 25 and the project builds on JDK 21, both from mise (see `lua/plugins/java.lua`).
+
+| Key                         | Action                                              |
+| --------------------------- | --------------------------------------------------- |
+| `<Space>dc`                 | Run/debug: pick a `main` class (or attach on :5005) |
+| `<Space>db`                 | Toggle breakpoint                                   |
+| `<Space>tt` / `<Space>tr`   | Run tests in class / nearest test method            |
+| `<Space>tT`                 | Pick a test to run                                  |
+| `<Space>cxv` / `<Space>cxc` | Extract variable / constant (`<Space>cxm` visual: method) |
+| `<Space>cgs`                | Go to super implementation                          |
+| `<Space>cgS`                | Go between test and the class it tests              |
+
 ## 11. Diagnostics (errors and warnings)
 
 | Key                       | Action                           |
@@ -425,9 +437,12 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | `<C-a> H J K L`           | Resize pane (repeatable)                                |
 | `<C-a> z`                 | Zoom pane                                               |
 | `<C-a> x` / `<C-a> X`     | Kill pane / window                                      |
+| `<C-a> Q`                 | Close project: kill session, then delete its `node_modules` + build output (`.next` `.nx` `dist` `build` `target` …) |
 | `<C-a> [`                 | Copy mode (`v` select, `y` copy)                        |
 | `<C-a> d`                 | Detach (everything keeps running)                       |
 | `<C-a> r`                 | Reload tmux config                                      |
+
+> `<C-a> Q` only deletes folders git ignores, never touches `.claude/worktrees`, and skips the cleanup if another session is still in the project. Preview with `~/.config/tmux/cleanup.sh --dry-run .`; log in `~/.cache/project-cleanup.log`.
 
 > The session pill (bottom-left) turns yellow while the prefix is active. After a reboot tmux restores windows; in nvim press `<Space>qs` to restore buffers.
 
