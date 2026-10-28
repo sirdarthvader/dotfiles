@@ -12,6 +12,8 @@ cursor-style = block
 cursor-style-blink = false
 shell-integration-features = no-cursor
 mouse-hide-while-typing = true
+# 1.4 turned select-to-copy off by default on macOS; this keeps the 1.3 behaviour
+copy-on-select = primary
 
 # Shell: always land in tmux (attach to the last session, or start "main")
 command = /bin/zsh --login -c "tmux attach 2>/dev/null || tmux new-session -s main"
@@ -33,6 +35,9 @@ background-image-fit = cover
 background-image-opacity = 0.08
 config-file = ?wallpaper.conf
 
+# Animated aurora behind the text (only tints empty background; pauses when unfocused). Disabled for now.
+# custom-shader = shaders/aurora.glsl
+
 # Padding (left, right, top, bottom → x/y in Ghostty)
 window-padding-x = 4,0
 window-padding-y = 2,0
@@ -44,6 +49,7 @@ keybind = shift+enter=text:\x1b[13;2u
 # Ctrl+` toggles a scratch terminal popup, like VS Code (sends tmux prefix C-a + t; see tmux/popup.sh)
 keybind = ctrl+backquote=text:\x01t
 
-# Cmd+Shift+B: show the queued background image, then queue the next one (sends tmux prefix C-a + B)
-keybind = cmd+shift+b=reload_config
-keybind = chain=text:\x01B
+# Cmd+Shift+B: queue the next background image (sends tmux prefix C-a + B), then reload to show one.
+# Text must come before reload_config: text chained after a reload reads the freed old config (garbage bytes on quick presses).
+keybind = cmd+shift+b=text:\x01B
+keybind = chain=reload_config
