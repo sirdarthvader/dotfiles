@@ -50,7 +50,7 @@ Learn sections A–D first; the rest of this file can wait. `<C-a>` is the tmux 
 | Situation                             | Keys                                   |
 | ------------------------------------- | -------------------------------------- |
 | Big task, give Claude the full screen | `<Space>aw` (again to put it back)     |
-| Second task in parallel               | `wt my-task` in a shell                |
+| Second task in parallel               | `wt my-task` in a shell (`wtrm my-task` when done) |
 | Reading a markdown doc                | just open it; it renders by itself     |
 | Starting a fresh Claude task          | `/clear` in Claude (watch `ctx %` at the bottom) |
 
@@ -366,7 +366,7 @@ The agent runs in a tmux pane on the right of the current window (one per window
 - Status line under Claude's prompt: model │ folder  branch (`*` = uncommitted) │ `ctx N%` — green, yellow from 50%, red from 80% (time to `/compact` or `/clear`).
 - Claude runs tests, lint, type checks, builds and read-only git/gh commands without asking (allowlist in `claude/settings.json`). It is **blocked** from force-push, `reset --hard`, `clean -f`, `branch -D`, `checkout .`/`restore .` and `stash drop|clear`; normal `git push` still asks.
 - Jira / GitHub: run `/mcp` once in Claude and log in to both, then e.g. "implement PROJ-123, then open a PR".
-- Parallel agents: `wt <name>` per task (shell section), one Claude in each session; `<C-a> s` to hop between them.
+- Parallel agents: `wt <name>` per task (shell section), one Claude in each session; `<C-a> f` or `<C-a> s` to hop between them, `wtrm <name>` when the PR is up. Two dev servers on one port clash: run one at a time or set `PORT=3001`.
 
 ## 15. Toggles (`<Space>u`)
 
@@ -473,7 +473,8 @@ Ghostty opens straight into tmux. One **session per project**, each with windows
 | Command        | Action                                                         |
 | -------------- | -------------------------------------------------------------- |
 | `t` / `t .`    | Pick a project / use the current dir → tmux session (code/run/shell) |
-| `wt <name>`    | Parallel task: fresh worktree off main + its own session `<repo>@<name>` (`.env` copied, `pnpm install` in run). Open Claude there with `<Space>aa` |
+| `wt <name>`    | Parallel task: fresh worktree off main + its own session `<repo>@<name>` (`.env`, `.claude/settings.local.json` and the repo's `.worktreeinclude` entries copied, `pnpm install` in run). Open Claude there with `<Space>aa` |
+| `wtrm <name>`  | Task done: remove that worktree (refuses if it has uncommitted changes), close its sessions + hidden Claude pane, delete the branch if merged. Run it from the main repo |
 | `tls`          | List tmux sessions                                             |
 | `lg`           | Lazygit                                                        |
 | `z <name>`     | Jump to a frequently used directory (zoxide)                   |

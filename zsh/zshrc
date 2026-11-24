@@ -121,7 +121,7 @@ export PATH="$HOME/.cargo/bin:$PATH"
 
 
 # DENO CONFIG
-export DENO_INSTALL="/Users/ashish.singh/.deno"
+export DENO_INSTALL="$HOME/.deno"
 export PATH="$DENO_INSTALL/bin:$PATH"
 
 # Compilation flags
@@ -145,7 +145,7 @@ alias t='~/.config/tmux/sessionizer.sh'
 # wt <name>: parallel task in a fresh git worktree (<repo>/.claude/worktrees/<name>, branch
 # worktree-<name>, off origin's default branch; same layout as `claude -w <name>`), opened as
 # its own tmux session "<repo>@<name>" with .env files copied and `pnpm install` running in "run".
-# Remove when done: git worktree remove .claude/worktrees/<name> && git branch -D worktree-<name>
+# Remove when done: wtrm <name>
 wt() {
   [[ -n $1 ]] || { echo "usage: wt <name>"; return 1; }
   local common root dir base install=""
@@ -157,9 +157,45 @@ wt() {
     base=$(git -C "$root" symbolic-ref --short refs/remotes/origin/HEAD 2>/dev/null || echo HEAD)
     git -C "$root" worktree add --no-track -b "worktree-$1" "$dir" "$base" || return
     for f in "$root"/.env*(N); do cp "$f" "$dir/"; done
+    # Other gitignored files a fresh checkout lacks: Claude's local permissions, plus whatever the
+    # repo lists in .worktreeinclude (gitignore syntax, the same file `claude -w` reads).
+    local p
+    for p in .claude/settings.local.json ${(f)"$([[ -f $root/.worktreeinclude ]] &&
+      git -C "$root" ls-files -oi --directory --exclude-from=.worktreeinclude)"}; do
+      [[ -e $root/$p ]] && git -C "$root" check-ignore -q -- "$p" || continue
+      p=${p%/}
+      mkdir -p "$dir/${p:h}" && cp -R "$root/$p" "$dir/${p:h}/"
+    done
     [[ -f $dir/pnpm-lock.yaml ]] && install="pnpm install"
   fi
   ~/.config/tmux/sessionizer.sh "$dir" "$install"
+}
+
+# wtrm <name>: undo `wt <name>` when the task is done. Removes the worktree (git refuses if it has
+# uncommitted changes, and then nothing else happens), closes its tmux sessions and stashed Claude
+# pane, and deletes the branch only if it's merged (otherwise prints the command to force it).
+wtrm() {
+  [[ -n $1 ]] || { echo "usage: wtrm <name>"; return 1; }
+  local common root dir session pane cwd ai=()
+  common=$(git rev-parse --path-format=absolute --git-common-dir 2>/dev/null) || { echo "wtrm: not in a git repo"; return 1; }
+  root=${common%/.git}
+  dir="$root/.claude/worktrees/$1"
+  [[ -d $dir ]] || { echo "wtrm: no worktree at $dir"; return 1; }
+  [[ $PWD/ != "$dir"/* ]] || { echo "wtrm: run this from outside the worktree (e.g. the main repo)"; return 1; }
+  # Claude panes hidden by prefix a live in the "_ai" session; find this worktree's before it's gone.
+  if [[ -n ${TMUX:-} ]]; then
+    while read -r pane cwd; do [[ $cwd/ != "$dir"/* ]] || ai+=("$pane"); done \
+      < <(tmux list-panes -s -t "=_ai" -F '#{pane_id} #{pane_current_path}' 2>/dev/null)
+  fi
+  git -C "$root" worktree remove "$dir" || return
+  if [[ -n ${TMUX:-} ]]; then
+    session=$(tr '.:' '__' <<<"${root:t}@$1") # same naming as sessionizer.sh
+    tmux kill-session -t "=_popup_$session" 2>/dev/null
+    tmux kill-session -t "=$session" 2>/dev/null
+    for pane in $ai; do tmux kill-pane -t "$pane" 2>/dev/null; done
+  fi
+  git -C "$root" branch -d "worktree-$1" 2>/dev/null ||
+    echo "wtrm: kept branch worktree-$1 (not merged). Delete it with: git branch -D worktree-$1"
 }
 
 
@@ -280,9 +316,9 @@ boom() {
 }
 
 # Project navigation
-alias cdfm='cd /Users/ashish.singh/Documents/EventCloud/framework-monorepo'
-alias cddf='cd /Users/ashish.singh/Documents/code-dump/development-framework'
-alias cdtest='cd /Users/ashish.singh/Documents/cdf-test-planner-app'
+alias cdfm='cd ~/Documents/EventCloud/framework-monorepo'
+alias cddf='cd ~/Documents/code-dump/development-framework'
+alias cdtest='cd ~/Documents/cdf-test-planner-app'
 
 # ZSHRC edit and reload
 alias oz='code ~/.zshrc'
@@ -299,7 +335,7 @@ killport() {
 
 
 ## PNPM path setup
-export PNPM_HOME="/Users/ashish.singh/Library/pnpm"
+export PNPM_HOME="$HOME/Library/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
@@ -307,7 +343,7 @@ esac
 ## PNPM end
 
 # AsyncAPI CLI Autocomplete
-ASYNCAPI_AC_ZSH_SETUP_PATH=/Users/ashish.singh/Library/Caches/@asyncapi/cli/autocomplete/zsh_setup && test -f $ASYNCAPI_AC_ZSH_SETUP_PATH && source $ASYNCAPI_AC_ZSH_SETUP_PATH; # asyncapi autocomplete setup
+ASYNCAPI_AC_ZSH_SETUP_PATH=$HOME/Library/Caches/@asyncapi/cli/autocomplete/zsh_setup && test -f $ASYNCAPI_AC_ZSH_SETUP_PATH && source $ASYNCAPI_AC_ZSH_SETUP_PATH; # asyncapi autocomplete setup
 
 
 

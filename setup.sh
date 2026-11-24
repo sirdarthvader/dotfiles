@@ -17,10 +17,20 @@ if [ "$OS" = "Darwin" ]; then
     echo "📦 Installing Homebrew..."
     /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
   fi
+  # A fresh install isn't on PATH yet (Apple Silicon: /opt/homebrew, Intel: /usr/local); put it there
+  # for this script and for every login shell (Ghostty starts tmux from a login shell).
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$b" ]; then
+      eval "$("$b" shellenv)"
+      grep -qF "$b shellenv" ~/.zprofile 2>/dev/null || echo "eval \"\$($b shellenv)\"" >> ~/.zprofile
+      break
+    fi
+  done
 
   echo "📦 Installing CLI tools..."
-  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise imagemagick jq
+  brew install neovim tmux fzf fd ripgrep zoxide yazi lazygit node tree-sitter-cli eza bat starship mise imagemagick jq git-delta
   brew install --cask font-caskaydia-cove-nerd-font
+  [ -d /Applications/Ghostty.app ] || brew install --cask ghostty
 
 elif [ "$OS" = "Linux" ]; then
   echo "📦 Installing CLI tools..."
@@ -45,6 +55,18 @@ elif [ "$OS" = "Linux" ]; then
   echo "⚠️  yazi may need manual install on Linux — check https://yazi-rs.github.io/docs/installation"
   echo "⚠️  Install 'CaskaydiaCove Nerd Font' from https://www.nerdfonts.com/font-downloads for icons"
 fi
+
+# ── oh-my-zsh + the two plugins zsh/zshrc loads ───────────
+# KEEP_ZSHRC: the installer must not replace ~/.zshrc (it gets linked to zsh/zshrc below).
+if [ ! -d ~/.oh-my-zsh ]; then
+  echo "📦 Installing oh-my-zsh..."
+  RUNZSH=no CHSH=no KEEP_ZSHRC=yes sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+fi
+ZSH_PLUGINS=~/.oh-my-zsh/custom/plugins
+[ -d $ZSH_PLUGINS/zsh-autosuggestions ] ||
+  git clone --depth 1 https://github.com/zsh-users/zsh-autosuggestions $ZSH_PLUGINS/zsh-autosuggestions
+[ -d $ZSH_PLUGINS/fast-syntax-highlighting ] ||
+  git clone --depth 1 https://github.com/zdharma-continuum/fast-syntax-highlighting $ZSH_PLUGINS/fast-syntax-highlighting
 
 # ── Get the directory this script lives in ────────────────
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -88,8 +110,24 @@ echo "   ✓ Shell config linked"
 backup_if_real ~/.config/bat
 ln -sfn "$DOTFILES_DIR/bat" ~/.config/bat
 bat cache --build >/dev/null
-git config --global delta.syntax-theme tokyonight_night
 echo "   ✓ bat theme linked"
+
+# Starship prompt (zsh/zshrc points STARSHIP_CONFIG at ~/.config/starship/starship.toml)
+backup_if_real ~/.config/starship
+ln -sfn "$DOTFILES_DIR/starship" ~/.config/starship
+echo "   ✓ Starship prompt linked"
+
+# git diffs through delta (side by side, Tokyo Night). Only display settings: name/email stay per machine.
+if command -v delta &> /dev/null; then
+  git config --global core.pager delta
+  git config --global interactive.diffFilter 'delta --color-only'
+  git config --global delta.navigate true
+  git config --global delta.side-by-side true
+  git config --global delta.line-numbers true
+  git config --global delta.syntax-theme tokyonight_night
+  git config --global merge.conflictstyle zdiff3
+  echo "   ✓ git uses delta for diffs"
+fi
 # ── tmux plugin manager (TPM) ────────────────
 # The tmux config loads plugins from ~/.tmux/plugins; clone TPM so they work.
 if [ ! -d ~/.tmux/plugins/tpm ]; then
@@ -125,9 +163,12 @@ jq -s '.[0] as $add | .[1]
   mv ~/.claude/settings.json.tmp ~/.claude/settings.json
 echo "   ✓ Claude Code hooks, status line and permissions merged"
 
-# Ignore Claude/wt worktrees (<repo>/.claude/worktrees) in every repo
+# Ignore Claude/wt worktrees (<repo>/.claude/worktrees) and Claude's per-machine permissions in every
+# repo. The worktrees line also keeps Nx from seeing a worktree's projects as duplicates.
 mkdir -p ~/.config/git
-grep -qxF '**/.claude/worktrees/' ~/.config/git/ignore 2>/dev/null || echo '**/.claude/worktrees/' >> ~/.config/git/ignore
+for pattern in '**/.claude/worktrees/' '**/.claude/settings.local.json'; do
+  grep -qxF "$pattern" ~/.config/git/ignore 2>/dev/null || echo "$pattern" >> ~/.config/git/ignore
+done
 
 # ── Done! ─────────────────────────────────────────────────
 echo ""
@@ -139,4 +180,5 @@ echo "  2. Open nvim — plugins will auto-install on first launch"
 echo "  3. Run :Copilot auth inside Neovim to sign in to GitHub Copilot"
 echo "  4. Run 'claude auth login' in terminal to sign in to Claude Code, then /mcp inside Claude to connect Jira + GitHub"
 echo "  5. Open Ghostty (auto-attaches tmux), then prefix + I to install tmux plugins; use 't' or prefix + f to open a project"
+echo "  6. Set your git name/email and mise runtimes by hand: README.md, 'Not in this repo'"
 echo ""
